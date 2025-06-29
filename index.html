@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Word Game</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Daily Word Game</h1>
+            <p class="subtitle">Guess the 5-letter word in 6 tries</p>
+        </header>
+
+        <div class="game-container">
+            <div id="board" class="board"></div>
+            
+            <div class="message" id="message"></div>
+            
+            <div class="keyboard-container">
+                <div class="keyboard" id="keyboard"></div>
+            </div>
+        </div>
+
+        <div class="modal" id="modal">
+            <div class="modal-content">
+                <h2 id="modal-title"></h2>
+                <p id="modal-message"></p>
+                <div id="share-result" class="share-result"></div>
+                <button id="share-button" class="share-button">Share Result</button>
+                <button id="close-modal" class="close-button">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
