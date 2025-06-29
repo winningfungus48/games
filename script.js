@@ -155,7 +155,8 @@ class WordGame {
         }
         
         const guess = this.getCurrentGuess().toUpperCase();
-        if (!window.ALLOWED_WORDS.includes(guess)) {
+        console.log('Guess:', guess, 'Allowed:', window.ALLOWED_WORDS && window.ALLOWED_WORDS.includes(guess));
+        if (!window.ALLOWED_WORDS || !window.ALLOWED_WORDS.includes(guess)) {
             this.showMessage('Not in word list');
             this.shakeRow();
             return;
