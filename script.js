@@ -154,7 +154,7 @@ class WordGame {
             return;
         }
         
-        const guess = this.getCurrentGuess();
+        const guess = this.getCurrentGuess().toUpperCase();
         if (!window.ALLOWED_WORDS.includes(guess)) {
             this.showMessage('Not in word list');
             this.shakeRow();
