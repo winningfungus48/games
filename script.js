@@ -356,7 +356,8 @@ class WordGame {
         const row = this.board.children[this.currentRow];
         let guess = '';
         for (let i = 0; i < this.WORD_LENGTH; i++) {
-            guess += row.children[i].textContent;
+            const letter = row.children[i].textContent.trim().toUpperCase();
+            guess += letter ? letter : '';
         }
         return guess;
     }
