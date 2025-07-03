@@ -1,51 +1,51 @@
 const events = [
     {
-        event: "Fall of the Berlin Wall",
+        event: "In what year did the Berlin Wall fall, marking the symbolic end of the Cold War?",
         year: 1989,
         fact: "The Berlin Wall fell on November 9, 1989, marking the symbolic end of the Cold War and paving the way for German reunification."
     },
     {
-        event: "Moon Landing (Apollo 11)",
+        event: "In what year did Neil Armstrong become the first human to step on the Moon?",
         year: 1969,
         fact: "Neil Armstrong became the first human to step on the Moon on July 20, 1969."
     },
     {
-        event: "Signing of the Declaration of Independence (USA)",
+        event: "In what year was the United States Declaration of Independence adopted?",
         year: 1776,
         fact: "The United States Declaration of Independence was adopted on July 4, 1776."
     },
     {
-        event: "Start of World War I",
+        event: "In what year did World War I begin?",
         year: 1914,
         fact: "World War I began in July 1914 after the assassination of Archduke Franz Ferdinand."
     },
     {
-        event: "Discovery of Penicillin",
+        event: "In what year did Alexander Fleming discover penicillin, revolutionizing medicine?",
         year: 1928,
         fact: "Alexander Fleming discovered penicillin in 1928, revolutionizing medicine."
     },
     {
-        event: "French Revolution begins",
+        event: "In what year did the French Revolution begin, leading to the end of monarchy in France?",
         year: 1789,
         fact: "The French Revolution started in 1789, leading to the end of monarchy in France."
     },
     {
-        event: "First Powered Flight (Wright Brothers)",
+        event: "In what year did the Wright brothers make the first powered flight?",
         year: 1903,
         fact: "The Wright brothers made the first powered flight on December 17, 1903."
     },
     {
-        event: "Invention of the Printing Press (Gutenberg)",
+        event: "In what year did Johannes Gutenberg invent the movable-type printing press?",
         year: 1440,
         fact: "Johannes Gutenberg invented the movable-type printing press around 1440."
     },
     {
-        event: "Start of the Renaissance",
+        event: "Around what year did the Renaissance begin in Italy, sparking a period of great cultural change?",
         year: 1300,
         fact: "The Renaissance began in Italy around 1300, sparking a period of great cultural change."
     },
     {
-        event: "End of the American Civil War",
+        event: "In what year did the American Civil War end with the surrender of the Confederate Army?",
         year: 1865,
         fact: "The American Civil War ended in 1865 with the surrender of the Confederate Army."
     }
@@ -59,8 +59,15 @@ let guessHistory = [];
 
 const eventPrompt = document.getElementById('eventPrompt');
 const guessForm = document.getElementById('guessForm');
-const yearInput = document.getElementById('yearInput');
-const guessHistoryList = document.getElementById('guessHistory');
+const digitInputs = [
+    document.getElementById('digit1'),
+    document.getElementById('digit2'),
+    document.getElementById('digit3'),
+    document.getElementById('digit4')
+];
+const guessBtn = document.getElementById('guessBtn');
+const guessResult = document.getElementById('guessResult');
+const guessHistoryDiv = document.getElementById('guessHistory');
 const resultModal = document.getElementById('resultModal');
 const modalTitle = document.getElementById('modalTitle');
 const modalAnswer = document.getElementById('modalAnswer');
@@ -77,11 +84,15 @@ function resetGame() {
     solved = false;
     guessHistory = [];
     eventPrompt.textContent = currentEvent.event;
-    guessHistoryList.innerHTML = '';
-    yearInput.value = '';
-    yearInput.disabled = false;
-    yearInput.focus();
-    guessForm.querySelector('button').disabled = false;
+    guessHistoryDiv.innerHTML = '';
+    guessResult.textContent = '';
+    digitInputs.forEach(input => {
+        input.value = '';
+        input.disabled = false;
+        input.classList.remove('error');
+    });
+    digitInputs[0].focus();
+    guessBtn.disabled = true;
     hideModal();
 }
 
@@ -91,46 +102,114 @@ function getFeedback(guess, answer) {
     return 'far';
 }
 
-function addGuessToHistory(guess, feedback) {
-    const li = document.createElement('li');
-    const badge = document.createElement('span');
-    badge.classList.add('guess-badge');
-    if (feedback === 'correct') badge.classList.add('badge-correct');
-    else if (feedback === 'close') badge.classList.add('badge-close');
-    else badge.classList.add('badge-far');
-    badge.textContent = guess;
-    li.appendChild(badge);
-    let feedbackText = '';
-    if (feedback === 'correct') feedbackText = 'Correct!';
-    else if (feedback === 'close') feedbackText = 'Within 10 years';
-    else feedbackText = 'More than 10 years off';
-    const text = document.createElement('span');
-    text.textContent = feedbackText;
-    li.appendChild(text);
-    guessHistoryList.appendChild(li);
+function getDirectionArrow(guess, answer) {
+    if (guess === answer) return '✔️';
+    if (guess < answer) return '⬆️';
+    return '⬇️';
 }
+
+function getYearBoxColor(feedback) {
+    if (feedback === 'correct') return 'green';
+    if (feedback === 'close') return 'yellow';
+    return 'gray';
+}
+
+function addGuessToHistory(guess, feedback) {
+    const row = document.createElement('div');
+    row.className = 'guess-row';
+    // Year box
+    const yearBox = document.createElement('div');
+    yearBox.className = 'guess-year-box ' + getYearBoxColor(feedback);
+    String(guess).padStart(4, '0').split('').forEach(d => {
+        const digitBox = document.createElement('div');
+        digitBox.className = 'guess-digit-box';
+        digitBox.textContent = d;
+        yearBox.appendChild(digitBox);
+    });
+    row.appendChild(yearBox);
+    // Direction or correct
+    if (feedback === 'correct') {
+        const correctMsg = document.createElement('span');
+        correctMsg.className = 'guess-correct';
+        correctMsg.textContent = '✔️ Correct!';
+        row.appendChild(correctMsg);
+    } else {
+        const arrow = document.createElement('span');
+        arrow.className = 'guess-arrow';
+        arrow.textContent = getDirectionArrow(guess, currentEvent.year);
+        row.appendChild(arrow);
+    }
+    guessHistoryDiv.appendChild(row);
+}
+
+function setGuessBtnState() {
+    const allFilled = digitInputs.every(input => input.value.match(/^[0-9]$/));
+    guessBtn.disabled = !allFilled;
+}
+
+digitInputs.forEach((input, idx) => {
+    input.addEventListener('input', e => {
+        const val = input.value;
+        // Only allow one digit
+        if (!val.match(/^[0-9]$/)) {
+            input.value = '';
+            return;
+        }
+        // Move to next input if not last
+        if (val && idx < 3) {
+            digitInputs[idx + 1].focus();
+        }
+        setGuessBtnState();
+    });
+    input.addEventListener('keydown', e => {
+        if (e.key === 'Backspace') {
+            if (input.value === '' && idx > 0) {
+                digitInputs[idx - 1].focus();
+            }
+        } else if (e.key === 'ArrowLeft' && idx > 0) {
+            digitInputs[idx - 1].focus();
+        } else if (e.key === 'ArrowRight' && idx < 3) {
+            digitInputs[idx + 1].focus();
+        } else if (e.key === 'Enter') {
+            if (!guessBtn.disabled) {
+                guessForm.requestSubmit();
+            }
+        }
+    });
+});
 
 guessForm.addEventListener('submit', function(e) {
     e.preventDefault();
     if (solved || attempts >= MAX_ATTEMPTS) return;
-    const guess = parseInt(yearInput.value, 10);
-    if (isNaN(guess) || guess < 1000 || guess > 2999) {
-        yearInput.value = '';
-        yearInput.focus();
+    const guessStr = digitInputs.map(input => input.value).join('');
+    if (!guessStr.match(/^\d{4}$/)) {
+        digitInputs.forEach(input => input.classList.add('error'));
         return;
     }
+    digitInputs.forEach(input => input.classList.remove('error'));
+    const guess = parseInt(guessStr, 10);
     attempts++;
     const feedback = getFeedback(guess, currentEvent.year);
     addGuessToHistory(guess, feedback);
     guessHistory.push({ guess, feedback });
+    // Show result below input
     if (feedback === 'correct') {
         solved = true;
+        guessResult.textContent = 'Correct!';
         showModal(true);
     } else if (attempts >= MAX_ATTEMPTS) {
+        guessResult.textContent = `The correct year was ${currentEvent.year}.`;
         showModal(false);
+    } else {
+        if (guess < currentEvent.year) {
+            guessResult.textContent = 'The correct year is later (⬆️)';
+        } else {
+            guessResult.textContent = 'The correct year is earlier (⬇️)';
+        }
     }
-    yearInput.value = '';
-    yearInput.focus();
+    digitInputs.forEach(input => input.value = '');
+    digitInputs[0].focus();
+    setGuessBtnState();
 });
 
 function showModal(won) {
@@ -142,8 +221,8 @@ function showModal(won) {
     }
     modalAnswer.textContent = `The correct year was ${currentEvent.year}.`;
     modalFact.textContent = currentEvent.fact;
-    yearInput.disabled = true;
-    guessForm.querySelector('button').disabled = true;
+    digitInputs.forEach(input => input.disabled = true);
+    guessBtn.disabled = true;
 }
 
 function hideModal() {

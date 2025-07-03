@@ -1,5 +1,5 @@
 body {
-    font-family: 'Segoe UI', 'Arial', sans-serif;
+    font-family: 'Raleway', 'Segoe UI', 'Arial', sans-serif;
     background: #f7f7f7;
     color: #222;
     margin: 0;
@@ -15,44 +15,66 @@ body {
     padding: 32px 24px 24px 24px;
 }
 
-header h1 {
-    font-size: 2.2rem;
-    margin-bottom: 0.2em;
-    letter-spacing: 0.02em;
-    font-weight: 600;
+.timel-title {
+    font-family: 'Raleway', 'Segoe UI', 'Arial', sans-serif;
+    font-size: 2.6rem;
+    font-weight: 700;
+    text-align: center;
+    margin: 0.5em 0 0.2em 0;
+    letter-spacing: 0.04em;
 }
-.subtitle {
-    font-size: 1.1rem;
-    color: #666;
-    margin-bottom: 1.5em;
-}
+
 .event-section {
+    display: flex;
+    justify-content: center;
     margin-bottom: 1.5em;
 }
-.event-prompt {
-    font-size: 1.2rem;
+.event-prompt-box {
+    background: #f0f3fa;
+    border-radius: 8px;
+    padding: 1.2em 1.5em;
+    font-size: 1.18rem;
     font-weight: 500;
-    background: #f0f0f0;
-    border-radius: 6px;
-    padding: 1em;
-    margin-bottom: 0.5em;
+    color: #2a2a2a;
+    text-align: center;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+    max-width: 420px;
+    margin: 0 auto;
 }
-#guessForm {
+
+.year-form {
     display: flex;
-    gap: 0.5em;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
     margin-bottom: 1.2em;
 }
-.year-input {
-    flex: 1;
-    padding: 0.6em 0.8em;
-    font-size: 1.1rem;
-    border: 1px solid #bbb;
-    border-radius: 4px;
-    outline: none;
-    transition: border 0.2s;
+.year-input-group {
+    display: flex;
+    gap: 0.5em;
+    justify-content: center;
 }
-.year-input:focus {
-    border-color: #888;
+.digit-input {
+    width: 48px;
+    height: 56px;
+    font-size: 2rem;
+    text-align: center;
+    border: 2px solid #bfc7d1;
+    border-radius: 6px;
+    background: #fff;
+    margin: 0;
+    outline: none;
+    transition: border 0.2s, box-shadow 0.2s;
+    font-family: 'Raleway', 'Segoe UI', 'Arial', sans-serif;
+    font-weight: 600;
+}
+.digit-input:focus {
+    border-color: #3a6ea5;
+    box-shadow: 0 0 0 2px #c7e0ff;
+}
+#guessBtn {
+    margin-top: 0.5em;
+    min-width: 120px;
 }
 .btn {
     background: #e0e0e0;
@@ -63,8 +85,14 @@ header h1 {
     font-size: 1rem;
     cursor: pointer;
     transition: background 0.2s;
+    font-family: 'Raleway', 'Segoe UI', 'Arial', sans-serif;
 }
-.btn:hover, .btn:focus {
+.btn:disabled {
+    background: #e0e0e0;
+    color: #aaa;
+    cursor: not-allowed;
+}
+.btn:hover:not(:disabled), .btn:focus:not(:disabled) {
     background: #d0d0d0;
 }
 .btn-primary {
@@ -74,41 +102,71 @@ header h1 {
 .btn-primary:hover, .btn-primary:focus {
     background: #29507a;
 }
+.guess-result {
+    text-align: center;
+    font-size: 1.1rem;
+    margin-bottom: 1.2em;
+    min-height: 1.5em;
+}
 .guess-history-section {
     margin-top: 1.2em;
 }
 .guess-history {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7em;
+    align-items: center;
 }
-.guess-history li {
+.guess-row {
     display: flex;
     align-items: center;
-    gap: 1em;
-    margin-bottom: 0.5em;
-    font-size: 1.1rem;
+    gap: 1.2em;
+    background: #f7f7fa;
+    border-radius: 8px;
+    padding: 0.6em 1.2em;
+    min-width: 220px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    font-size: 1.15rem;
+    justify-content: center;
 }
-.guess-badge {
-    display: inline-block;
-    min-width: 60px;
-    text-align: center;
+.guess-year-box {
+    display: flex;
+    gap: 0.2em;
+}
+.guess-digit-box {
+    width: 36px;
+    height: 44px;
+    background: #e0e0e0;
     border-radius: 4px;
-    padding: 0.3em 0.7em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
     font-weight: 600;
-    font-size: 1rem;
+    margin: 0 1px;
+    transition: background 0.2s;
 }
-.badge-correct {
-    background: #4caf50;
-    color: #fff;
+.guess-year-box.yellow {
+    background: #fffbe6;
+    border-radius: 4px;
 }
-.badge-close {
-    background: #ffd600;
-    color: #222;
+.guess-year-box.gray {
+    background: #e0e0e0;
+    border-radius: 4px;
 }
-.badge-far {
-    background: #bdbdbd;
-    color: #222;
+.guess-year-box.green {
+    background: #d4f7d4;
+    border-radius: 4px;
+}
+.guess-arrow {
+    font-size: 1.3rem;
+    margin-left: 0.5em;
+}
+.guess-correct {
+    color: #388e3c;
+    font-weight: 700;
+    margin-left: 0.5em;
+    font-size: 1.2rem;
 }
 .modal {
     display: none;
@@ -146,5 +204,19 @@ header h1 {
     }
     .modal-content {
         padding: 1.2em 0.5em;
+    }
+    .event-prompt-box {
+        padding: 0.7em 0.2em;
+        font-size: 1rem;
+    }
+    .guess-row {
+        min-width: 0;
+        font-size: 1rem;
+        padding: 0.4em 0.5em;
+    }
+    .digit-input {
+        width: 36px;
+        height: 44px;
+        font-size: 1.3rem;
     }
 } 
