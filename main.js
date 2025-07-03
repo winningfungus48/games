@@ -24,4 +24,23 @@ document.getElementById('crosswordBtn').addEventListener('click', function() {
     document.addEventListener('keydown', function(e) {
         if (modal.style.display === 'flex' && e.key === 'Escape') closeModal(modalId);
     });
+});
+
+// Robust navigation for Play buttons
+function goToGame(subdir) {
+    // Always use the current directory as base
+    var base = window.location.pathname.replace(/\/[^\/]*$/, '/');
+    // If on root (index.html), just append
+    if (!base.endsWith('/')) base += '/';
+    window.location.assign(base + subdir + '/index.html');
+}
+
+document.querySelector('#timelModal .btn-primary').addEventListener('click', function() {
+    goToGame('Timel');
+});
+document.querySelector('#numberleModal .btn-primary').addEventListener('click', function() {
+    goToGame('Numberle');
+});
+document.querySelector('#crosswordModal .btn-primary').addEventListener('click', function() {
+    goToGame('OneClueCrossword');
 }); 
