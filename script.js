@@ -29,11 +29,21 @@ const modalMessage = document.getElementById('modal-message');
 const statsDiv = document.getElementById('stats');
 const playAgainBtn = document.getElementById('play-again-btn');
 const closeModalBtn = document.getElementById('close-modal');
+const difficultySelect = document.getElementById('difficulty-select');
+const subtitleDigits = document.getElementById('subtitle-digits');
 
 // Welcome modal logic
 const welcomeOverlay = document.getElementById('welcome-overlay');
 const welcomePlay = document.getElementById('welcome-play');
 const welcomeClose = document.getElementById('welcome-close');
+
+// Endgame modal logic
+const endgameOverlay = document.getElementById('endgame-overlay');
+const endgameTitle = document.getElementById('endgame-title');
+const endgameMessage = document.getElementById('endgame-message');
+const playagainBtn = document.getElementById('playagain-btn');
+const endgameClose = document.getElementById('endgame-close');
+const replayBtn = document.getElementById('replay-btn');
 
 function showWelcomeModal() {
     welcomeOverlay.classList.remove('hide');
@@ -51,37 +61,63 @@ function hideWelcomeModal() {
 welcomePlay.addEventListener('click', hideWelcomeModal);
 welcomeClose.addEventListener('click', hideWelcomeModal);
 
-// Initialize the game
-function initGame() {
-    loadStats();
+function showEndgameModal(won) {
+    endgameOverlay.classList.add('show');
+    endgameOverlay.classList.remove('hide');
+    if (won) {
+        endgameTitle.textContent = `You solved the number in ${gameState.currentRow + 1} tries!`;
+        endgameMessage.textContent = '';
+    } else {
+        endgameTitle.textContent = 'Game Over!';
+        endgameMessage.textContent = `The number was ${gameState.secretNumber}.`;
+    }
+}
+
+function hideEndgameModal() {
+    endgameOverlay.classList.add('hide');
+    setTimeout(() => {
+        endgameOverlay.classList.remove('show');
+        endgameOverlay.classList.remove('hide');
+    }, 300);
+}
+
+endgameClose.addEventListener('click', hideEndgameModal);
+playagainBtn.addEventListener('click', () => {
+    hideEndgameModal();
+    setTimeout(() => startNewGame(), 350);
+});
+replayBtn.addEventListener('click', () => {
+    startNewGame();
+});
+
+function startNewGame() {
+    resetGameState();
     generateSecretNumber();
     createBoard();
     createNumberPad();
     setupEventListeners();
     updateEnterButton();
+    clearMessage();
+    closeModal();
+    resetNumberPadColors();
 }
 
-// Generate a random 5-digit number (allowing repeated digits, but max 2 of any digit)
 function generateSecretNumber() {
     let number;
     let attempts = 0;
-    const maxAttempts = 100; // Prevent infinite loops
-    
+    const maxAttempts = 100;
     do {
         number = '';
-        for (let i = 0; i < gameState.numberLength; i++) {
+        for (let i = 0; i < 5; i++) {
             number += Math.floor(Math.random() * 10);
         }
         attempts++;
     } while (!isValidSecretNumber(number) && attempts < maxAttempts);
-    
-    // If we couldn't generate a valid number after max attempts, use the last generated one
     if (attempts >= maxAttempts) {
         console.warn('Could not generate valid number after', maxAttempts, 'attempts, using:', number);
     }
-    
     gameState.secretNumber = number;
-    console.log('Secret number:', gameState.secretNumber); // For debugging
+    console.log('Secret number:', gameState.secretNumber);
 }
 
 // Check if a number is valid (no more than 2 instances of any digit)
@@ -105,7 +141,6 @@ function createBoard() {
         const rowDiv = document.createElement('div');
         rowDiv.className = 'row';
         rowDiv.dataset.row = row;
-        
         for (let col = 0; col < gameState.numberLength; col++) {
             const tile = document.createElement('div');
             tile.className = 'tile';
@@ -113,7 +148,6 @@ function createBoard() {
             tile.dataset.col = col;
             rowDiv.appendChild(tile);
         }
-        
         board.appendChild(rowDiv);
     }
 }
@@ -168,7 +202,7 @@ function handleKeydown(e) {
 // Input a number
 function inputNumber(num) {
     if (gameState.gameOver || gameState.currentCol >= gameState.numberLength) return;
-    
+    animateNumberKey(num);
     const tile = getCurrentTile();
     if (tile) {
         tile.textContent = num;
@@ -277,10 +311,9 @@ function evaluateGuess(guess) {
 
 // Display feedback on the board
 function displayFeedback(feedback) {
-    for (let col = 0; col < gameState.numberLength; col++) {
-        const tile = document.querySelector(`[data-row="${gameState.currentRow}"][data-col="${col}"]`);
-        tile.classList.add(feedback[col]);
-    }
+    animateTilePop(gameState.currentRow, feedback, () => {
+        updateNumberPadColors(feedback, getCurrentGuess());
+    });
 }
 
 // Move to the next row
@@ -294,28 +327,26 @@ function nextRow() {
 // Shake the current row
 function shakeRow() {
     const row = document.querySelector(`[data-row="${gameState.currentRow}"]`);
-    const tiles = row.querySelectorAll('.tile');
-    tiles.forEach(tile => tile.classList.add('shake'));
-    
+    row.classList.remove('shake');
+    void row.offsetWidth;
+    row.classList.add('shake');
     setTimeout(() => {
-        tiles.forEach(tile => tile.classList.remove('shake'));
-    }, 500);
+        row.classList.remove('shake');
+    }, 400);
 }
 
 // Game won
 function gameWon() {
     gameState.gameOver = true;
     gameState.gameWon = true;
-    updateStats(true);
-    showGameOverModal('Congratulations!', `You found the number in ${gameState.currentRow + 1} tries!`);
+    showEndgameModal(true);
 }
 
 // Game lost
 function gameLost() {
     gameState.gameOver = true;
     gameState.gameWon = false;
-    updateStats(false);
-    showGameOverModal('Game Over', `The number was ${gameState.secretNumber}`);
+    showEndgameModal(false);
 }
 
 // Show game over modal
@@ -378,14 +409,12 @@ function saveStats() {
     localStorage.setItem('numbler-stats', JSON.stringify(stats));
 }
 
-// Start a new game
-function startNewGame() {
-    resetGameState();
-    generateSecretNumber();
-    createBoard();
-    updateEnterButton();
-    clearMessage();
-    closeModal();
+// Reset number pad key colors
+function resetNumberPadColors() {
+    const btns = numberPad.querySelectorAll('.number-btn');
+    btns.forEach(btn => {
+        btn.classList.remove('correct', 'present', 'absent');
+    });
 }
 
 // Reset game state
@@ -416,9 +445,117 @@ function closeModal() {
     modal.classList.remove('show');
 }
 
+// Helper: update number key feedback colors
+function updateNumberPadColors(feedback, guess) {
+    // Track best status for each digit
+    const bestStatus = {};
+    // Check all previous guesses for best status
+    for (let row = 0; row <= gameState.currentRow; row++) {
+        let rowGuess = '';
+        let rowFeedback = [];
+        if (row === gameState.currentRow) {
+            rowGuess = guess;
+            rowFeedback = feedback;
+        } else {
+            // Get guess and feedback from previous rows
+            rowGuess = '';
+            for (let col = 0; col < gameState.numberLength; col++) {
+                const tile = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                rowGuess += tile.textContent;
+            }
+            rowFeedback = [];
+            for (let col = 0; col < gameState.numberLength; col++) {
+                if (tileHasClass(row, col, 'correct')) rowFeedback[col] = 'correct';
+                else if (tileHasClass(row, col, 'present')) rowFeedback[col] = 'present';
+                else if (tileHasClass(row, col, 'absent')) rowFeedback[col] = 'absent';
+            }
+        }
+        for (let i = 0; i < rowGuess.length; i++) {
+            const digit = rowGuess[i];
+            if (!digit) continue;
+            if (rowFeedback[i] === 'correct') {
+                bestStatus[digit] = 'correct';
+            } else if (rowFeedback[i] === 'present' && bestStatus[digit] !== 'correct') {
+                bestStatus[digit] = 'present';
+            } else if (rowFeedback[i] === 'absent' && !bestStatus[digit]) {
+                bestStatus[digit] = 'absent';
+            }
+        }
+    }
+    // Apply best status to number keys
+    for (let d = 0; d <= 9; d++) {
+        const btn = numberPad.querySelector(`.number-btn[data-number="${d}"]`);
+        if (!btn) continue;
+        btn.classList.remove('correct', 'present', 'absent');
+        if (bestStatus[d] === 'correct') btn.classList.add('correct');
+        else if (bestStatus[d] === 'present') btn.classList.add('present');
+        else if (bestStatus[d] === 'absent') btn.classList.add('absent');
+    }
+}
+
+function tileHasClass(row, col, className) {
+    const tile = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+    return tile && tile.classList.contains(className);
+}
+
+// Animate number key press
+function animateNumberKey(num) {
+    const btn = numberPad.querySelector(`.number-btn[data-number="${num}"]`);
+    if (btn) {
+        btn.classList.remove('bounce');
+        // Force reflow for restart animation
+        void btn.offsetWidth;
+        btn.classList.add('bounce');
+        setTimeout(() => btn.classList.remove('bounce'), 180);
+    }
+}
+
+// Animate tile pop for a row
+function animateTilePop(rowIdx, feedback, cb) {
+    const row = document.querySelector(`[data-row="${rowIdx}"]`);
+    const tiles = row.querySelectorAll('.tile');
+    tiles.forEach((tile, i) => {
+        setTimeout(() => {
+            tile.classList.add('reveal-pop');
+            setTimeout(() => {
+                tile.classList.add(feedback[i]);
+                tile.classList.remove('reveal-pop');
+                if (i === tiles.length - 1 && cb) cb();
+            }, 200);
+        }, i * 120);
+    });
+}
+
 // Show modal on load, then start game after closing
 window.addEventListener('DOMContentLoaded', () => {
     showWelcomeModal();
     // Game will still initialize, but user can't interact until modal is closed
-    initGame();
+    setDifficulty();
+});
+
+// Allow Enter key to close welcome modal
+window.addEventListener('keydown', (e) => {
+    if (welcomeOverlay && welcomeOverlay.style.display !== 'none' && !welcomeOverlay.classList.contains('hide')) {
+        if (e.key === 'Enter') {
+            hideWelcomeModal();
+        }
+    }
+});
+
+// Only allow 5-digit mode
+function setDifficulty() {
+    resetGameState();
+    generateSecretNumber();
+    createBoard();
+    createNumberPad();
+    setupEventListeners();
+    updateEnterButton();
+    clearMessage();
+    closeModal();
+    resetNumberPadColors();
+}
+
+// On load, always start daily challenge
+window.addEventListener('DOMContentLoaded', () => {
+    setDifficulty();
 }); 
