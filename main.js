@@ -26,21 +26,17 @@ document.getElementById('crosswordBtn').addEventListener('click', function() {
     });
 });
 
-// Robust navigation for Play buttons
-function goToGame(subdir) {
-    // Always use the current directory as base
-    var base = window.location.pathname.replace(/\/[^\/]*$/, '/');
-    // If on root (index.html), just append
-    if (!base.endsWith('/')) base += '/';
-    window.location.assign(base + subdir + '/index.html');
+// Robust navigation for Play buttons (flat structure)
+function goToGame(filename) {
+    window.location.assign(filename);
 }
 
 document.querySelector('#timelModal .btn-primary').addEventListener('click', function() {
-    goToGame('Timel');
+    goToGame('timel.html');
 });
 document.querySelector('#numberleModal .btn-primary').addEventListener('click', function() {
-    goToGame('Numberle');
+    goToGame('numberle.html');
 });
 document.querySelector('#crosswordModal .btn-primary').addEventListener('click', function() {
-    goToGame('OneClueCrossword');
+    goToGame('crossword.html');
 }); 

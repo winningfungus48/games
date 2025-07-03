@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timel - History Year Guessing Game</title>
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="timel-styles.css">
+</head>
+<body>
+    <div class="timel-container">
+        <header>
+            <h1 class="timel-title">Timel</h1>
+        </header>
+        <main>
+            <div class="event-section">
+                <div id="eventPrompt" class="event-prompt-box"></div>
+            </div>
+            <form id="guessForm" autocomplete="off" class="year-form">
+                <div class="year-input-group">
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="digit-input" id="digit1" required>
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="digit-input" id="digit2" required>
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="digit-input" id="digit3" required>
+                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="digit-input" id="digit4" required>
+                </div>
+                <button type="submit" class="btn" id="guessBtn" disabled>Guess</button>
+            </form>
+            <div id="guessResult" class="guess-result"></div>
+            <div class="guess-history-section">
+                <div id="guessHistory" class="guess-history"></div>
+            </div>
+        </main>
+    </div>
+    <div id="resultModal" class="modal">
+        <div class="modal-content">
+            <h2 id="modalTitle"></h2>
+            <p id="modalAnswer"></p>
+            <p id="modalFact"></p>
+            <button id="playNextBtn" class="btn btn-primary">Play Next</button>
+        </div>
+    </div>
+    <script src="timel-script.js"></script>
+</body>
+</html> 
