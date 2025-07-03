@@ -102,13 +102,14 @@ function getFeedback(guess, answer) {
     return 'far';
 }
 
-function getDirectionArrow(guess, answer) {
-    if (guess === answer) return '✔️';
-    if (guess < answer) return '⬆️';
-    return '⬇️';
+function getDirectionArrow(guess, answer, color) {
+    // Use flat Unicode arrows, color is for accessibility
+    if (guess === answer) return '';
+    if (guess < answer) return '<span class="guess-arrow">↑</span>';
+    return '<span class="guess-arrow">↓</span>';
 }
 
-function getYearBoxColor(feedback) {
+function getYearBlockColor(feedback) {
     if (feedback === 'correct') return 'green';
     if (feedback === 'close') return 'yellow';
     return 'gray';
@@ -117,29 +118,22 @@ function getYearBoxColor(feedback) {
 function addGuessToHistory(guess, feedback) {
     const row = document.createElement('div');
     row.className = 'guess-row';
-    // Year box
-    const yearBox = document.createElement('div');
-    yearBox.className = 'guess-year-box ' + getYearBoxColor(feedback);
-    String(guess).padStart(4, '0').split('').forEach(d => {
-        const digitBox = document.createElement('div');
-        digitBox.className = 'guess-digit-box';
-        digitBox.textContent = d;
-        yearBox.appendChild(digitBox);
-    });
-    row.appendChild(yearBox);
-    // Direction or correct
-    if (feedback === 'correct') {
-        const correctMsg = document.createElement('span');
-        correctMsg.className = 'guess-correct';
-        correctMsg.textContent = '✔️ Correct!';
-        row.appendChild(correctMsg);
+    // Year block
+    const yearBlock = document.createElement('div');
+    yearBlock.className = 'guess-year-block ' + getYearBlockColor(feedback);
+    yearBlock.innerHTML =
+        `<span>${String(guess).padStart(4, '0')}</span>` +
+        (feedback === 'correct' ?
+            '<span class="guess-correct">✔️</span>' :
+            getDirectionArrow(guess, currentEvent.year, getYearBlockColor(feedback))
+        );
+    row.appendChild(yearBlock);
+    // Insert at the top
+    if (guessHistoryDiv.firstChild) {
+        guessHistoryDiv.insertBefore(row, guessHistoryDiv.firstChild);
     } else {
-        const arrow = document.createElement('span');
-        arrow.className = 'guess-arrow';
-        arrow.textContent = getDirectionArrow(guess, currentEvent.year);
-        row.appendChild(arrow);
+        guessHistoryDiv.appendChild(row);
     }
-    guessHistoryDiv.appendChild(row);
 }
 
 function setGuessBtnState() {
@@ -192,20 +186,16 @@ guessForm.addEventListener('submit', function(e) {
     const feedback = getFeedback(guess, currentEvent.year);
     addGuessToHistory(guess, feedback);
     guessHistory.push({ guess, feedback });
-    // Show result below input
+    // Remove result label for later/earlier
     if (feedback === 'correct') {
         solved = true;
-        guessResult.textContent = 'Correct!';
+        guessResult.textContent = '';
         showModal(true);
     } else if (attempts >= MAX_ATTEMPTS) {
-        guessResult.textContent = `The correct year was ${currentEvent.year}.`;
+        guessResult.textContent = '';
         showModal(false);
     } else {
-        if (guess < currentEvent.year) {
-            guessResult.textContent = 'The correct year is later (⬆️)';
-        } else {
-            guessResult.textContent = 'The correct year is earlier (⬇️)';
-        }
+        guessResult.textContent = '';
     }
     digitInputs.forEach(input => input.value = '');
     digitInputs[0].focus();
@@ -223,10 +213,19 @@ function showModal(won) {
     modalFact.textContent = currentEvent.fact;
     digitInputs.forEach(input => input.disabled = true);
     guessBtn.disabled = true;
+    // Add Enter key support for Play Again
+    document.addEventListener('keydown', handleModalEnter, { once: true });
 }
 
 function hideModal() {
     resultModal.style.display = 'none';
+    document.removeEventListener('keydown', handleModalEnter);
+}
+
+function handleModalEnter(e) {
+    if (e.key === 'Enter') {
+        playNextBtn.click();
+    }
 }
 
 playNextBtn.addEventListener('click', resetGame);
