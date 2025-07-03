@@ -69,7 +69,7 @@ function showEndgameModal(won) {
         endgameMessage.textContent = '';
     } else {
         endgameTitle.textContent = 'Game Over!';
-        endgameMessage.textContent = `The number was ${gameState.secretNumber}.`;
+        endgameMessage.textContent = `The Numberle was ${gameState.secretNumber}.`;
     }
 }
 
@@ -105,11 +105,19 @@ function startNewGame() {
 function generateSecretNumber() {
     let number;
     let attempts = 0;
-    const maxAttempts = 100;
+    const maxAttempts = 200;
     do {
         number = '';
+        const digitCounts = {};
         for (let i = 0; i < 5; i++) {
-            number += Math.floor(Math.random() * 10);
+            let d;
+            let tries = 0;
+            do {
+                d = Math.floor(Math.random() * 10);
+                tries++;
+            } while (digitCounts[d] >= 2 && Math.random() > 0.15 && tries < 10); // 85% chance to avoid >2 repeats
+            number += d;
+            digitCounts[d] = (digitCounts[d] || 0) + 1;
         }
         attempts++;
     } while (!isValidSecretNumber(number) && attempts < maxAttempts);
@@ -558,4 +566,11 @@ function setDifficulty() {
 // On load, always start daily challenge
 window.addEventListener('DOMContentLoaded', () => {
     setDifficulty();
+});
+
+// 1. Enter key triggers Play Again when modal is open
+window.addEventListener('keydown', (e) => {
+    if (endgameOverlay.classList.contains('show') && (e.key === 'Enter' || e.key === 'NumpadEnter')) {
+        if (!playagainBtn.disabled) playagainBtn.click();
+    }
 }); 
