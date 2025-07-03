@@ -30,6 +30,27 @@ const statsDiv = document.getElementById('stats');
 const playAgainBtn = document.getElementById('play-again-btn');
 const closeModalBtn = document.getElementById('close-modal');
 
+// Welcome modal logic
+const welcomeOverlay = document.getElementById('welcome-overlay');
+const welcomePlay = document.getElementById('welcome-play');
+const welcomeClose = document.getElementById('welcome-close');
+
+function showWelcomeModal() {
+    welcomeOverlay.classList.remove('hide');
+    document.body.style.overflow = 'hidden';
+}
+
+function hideWelcomeModal() {
+    welcomeOverlay.classList.add('hide');
+    setTimeout(() => {
+        welcomeOverlay.style.display = 'none';
+        document.body.style.overflow = '';
+    }, 300);
+}
+
+welcomePlay.addEventListener('click', hideWelcomeModal);
+welcomeClose.addEventListener('click', hideWelcomeModal);
+
 // Initialize the game
 function initGame() {
     loadStats();
@@ -40,14 +61,41 @@ function initGame() {
     updateEnterButton();
 }
 
-// Generate a random 5-digit number (allowing repeated digits)
+// Generate a random 5-digit number (allowing repeated digits, but max 2 of any digit)
 function generateSecretNumber() {
-    let number = '';
-    for (let i = 0; i < gameState.numberLength; i++) {
-        number += Math.floor(Math.random() * 10);
+    let number;
+    let attempts = 0;
+    const maxAttempts = 100; // Prevent infinite loops
+    
+    do {
+        number = '';
+        for (let i = 0; i < gameState.numberLength; i++) {
+            number += Math.floor(Math.random() * 10);
+        }
+        attempts++;
+    } while (!isValidSecretNumber(number) && attempts < maxAttempts);
+    
+    // If we couldn't generate a valid number after max attempts, use the last generated one
+    if (attempts >= maxAttempts) {
+        console.warn('Could not generate valid number after', maxAttempts, 'attempts, using:', number);
     }
+    
     gameState.secretNumber = number;
     console.log('Secret number:', gameState.secretNumber); // For debugging
+}
+
+// Check if a number is valid (no more than 2 instances of any digit)
+function isValidSecretNumber(number) {
+    const digitCounts = {};
+    
+    for (let digit of number) {
+        digitCounts[digit] = (digitCounts[digit] || 0) + 1;
+        if (digitCounts[digit] > 2) {
+            return false;
+        }
+    }
+    
+    return true;
 }
 
 // Create the game board
@@ -368,5 +416,9 @@ function closeModal() {
     modal.classList.remove('show');
 }
 
-// Initialize the game when the page loads
-document.addEventListener('DOMContentLoaded', initGame); 
+// Show modal on load, then start game after closing
+window.addEventListener('DOMContentLoaded', () => {
+    showWelcomeModal();
+    // Game will still initialize, but user can't interact until modal is closed
+    initGame();
+}); 

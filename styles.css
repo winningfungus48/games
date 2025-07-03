@@ -14,23 +14,24 @@ body {
 .container {
     max-width: 500px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 15px;
     height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
 }
 
 header {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     flex-shrink: 0;
 }
 
 h1 {
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: 700;
     color: #1a1a1a;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
 }
 
 .subtitle {
@@ -51,17 +52,17 @@ h1 {
 .board {
     display: grid;
     grid-template-rows: repeat(6, 1fr);
-    gap: 4px;
-    margin-bottom: 20px;
+    gap: 3px;
+    margin-bottom: 15px;
     width: 100%;
-    max-width: 350px;
+    max-width: 320px;
     flex-shrink: 0;
 }
 
 .row {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 4px;
+    gap: 3px;
 }
 
 .tile {
@@ -70,7 +71,7 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     font-weight: 600;
     text-transform: uppercase;
     background-color: white;
@@ -110,8 +111,8 @@ h1 {
 }
 
 .message {
-    height: 20px;
-    margin-bottom: 15px;
+    height: 18px;
+    margin-bottom: 10px;
     text-align: center;
     font-weight: 600;
     color: #dc2626;
@@ -120,15 +121,15 @@ h1 {
 
 .number-pad-container {
     width: 100%;
-    max-width: 350px;
+    max-width: 320px;
     flex-shrink: 0;
 }
 
 .number-pad {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 6px;
-    margin-bottom: 8px;
+    gap: 5px;
+    margin-bottom: 6px;
 }
 
 .number-btn {
@@ -137,7 +138,7 @@ h1 {
     border-radius: 6px;
     background-color: #e5e7eb;
     color: #374151;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -155,16 +156,16 @@ h1 {
 .action-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 6px;
+    gap: 5px;
 }
 
 .action-btn {
-    padding: 12px;
+    padding: 10px;
     border: none;
     border-radius: 6px;
     background-color: #e5e7eb;
     color: #374151;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -293,24 +294,28 @@ h1 {
 
 @media (max-width: 480px) {
     .container {
-        padding: 15px;
+        padding: 10px;
     }
     
     h1 {
-        font-size: 2rem;
+        font-size: 1.6rem;
+    }
+    
+    .subtitle {
+        font-size: 0.9rem;
     }
     
     .tile {
-        font-size: 1.25rem;
-    }
-    
-    .number-btn {
         font-size: 1rem;
     }
     
+    .number-btn {
+        font-size: 0.85rem;
+    }
+    
     .action-btn {
-        font-size: 0.9rem;
-        padding: 12px;
+        font-size: 0.8rem;
+        padding: 8px;
     }
     
     .modal-content {
@@ -321,4 +326,177 @@ h1 {
         grid-template-columns: 1fr;
         gap: 10px;
     }
+}
+
+@media (max-height: 600px) {
+    .container {
+        padding: 8px;
+    }
+    
+    header {
+        margin-bottom: 10px;
+    }
+    
+    h1 {
+        font-size: 1.4rem;
+        margin-bottom: 1px;
+    }
+    
+    .subtitle {
+        font-size: 0.8rem;
+    }
+    
+    .board {
+        margin-bottom: 10px;
+        gap: 2px;
+    }
+    
+    .row {
+        gap: 2px;
+    }
+    
+    .tile {
+        font-size: 0.9rem;
+    }
+    
+    .message {
+        height: 16px;
+        margin-bottom: 8px;
+    }
+    
+    .number-pad {
+        gap: 4px;
+        margin-bottom: 4px;
+    }
+    
+    .action-buttons {
+        gap: 4px;
+    }
+    
+    .number-btn {
+        font-size: 0.8rem;
+    }
+    
+    .action-btn {
+        font-size: 0.75rem;
+        padding: 6px;
+    }
+}
+
+/* Welcome Modal Overlay */
+.welcome-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.5);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.3s;
+    opacity: 1;
+    pointer-events: auto;
+}
+.welcome-overlay.hide {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.welcome-modal {
+    background: #f7f7f7;
+    border-radius: 18px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18), 0 1.5px 4px rgba(0,0,0,0.08);
+    padding: 36px 28px 28px 28px;
+    max-width: 370px;
+    width: 90vw;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: welcome-fadein 0.4s;
+}
+@keyframes welcome-fadein {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.welcome-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.welcome-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #222;
+    letter-spacing: -1px;
+}
+
+.welcome-desc {
+    font-size: 1.08rem;
+    color: #444;
+    margin-bottom: 28px;
+    line-height: 1.5;
+}
+
+.welcome-play {
+    background: #111;
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 999px;
+    padding: 13px 38px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    transition: background 0.18s;
+}
+.welcome-play:hover, .welcome-play:focus {
+    background: #222;
+}
+
+.welcome-close {
+    position: absolute;
+    top: 13px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #888;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1;
+    transition: color 0.18s;
+}
+.welcome-close:hover, .welcome-close:focus {
+    color: #222;
+}
+
+@media (max-width: 480px) {
+    .welcome-modal {
+        padding: 22px 7vw 18px 7vw;
+        max-width: 97vw;
+    }
+    .welcome-title {
+        font-size: 1.3rem;
+    }
+    .welcome-desc {
+        font-size: 0.98rem;
+        margin-bottom: 18px;
+    }
+    .welcome-play {
+        font-size: 1rem;
+        padding: 11px 0;
+        width: 100%;
+        min-width: 0;
+    }
+}
+
+/* Ensure overlay is above other modals */
+.modal {
+    z-index: 1000;
 } 

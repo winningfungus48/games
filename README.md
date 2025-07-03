@@ -1,10 +1,10 @@
-# Numbler - Number Guessing Game
+# Numberle - Number Guessing Game
 
 A web-based number guessing game inspired by Wordle, built with HTML, CSS, and JavaScript.
 
 ## 🎮 Game Overview
 
-Numbler is a number guessing game where players attempt to guess a secret 5-digit number within 6 attempts. Unlike some number games, **repeated digits are allowed** in the secret number, making it more challenging and interesting.
+Numberle is a number guessing game where players attempt to guess a secret 5-digit number within 6 attempts. The secret number can contain repeated digits, but **no more than 2 instances of any single digit** are allowed, making it challenging yet fair.
 
 ## 🎯 How to Play
 
@@ -17,10 +17,12 @@ Numbler is a number guessing game where players attempt to guess a secret 5-digi
 
 ### Example Gameplay
 
-If the secret number is `112345` and you guess `121111`:
+If the secret number is `11234` and you guess `12111`:
 - The first `1` would be green (correct position)
 - The second `1` would be yellow (in the number but wrong position)
 - The remaining digits would be gray (not in the number)
+
+**Note**: Valid secret numbers include `11234`, `99887`, but not `11123` or `44444`.
 
 ## 🚀 Features
 
@@ -36,7 +38,7 @@ If the secret number is `112345` and you guess `121111`:
 ## 🎨 Technical Details
 
 ### Game Logic
-- **Secret Number Generation**: Uses pseudo-random number generation
+- **Secret Number Generation**: Uses pseudo-random number generation with validation (max 2 instances of any digit)
 - **Feedback Algorithm**: Two-pass evaluation system for accurate feedback
 - **State Management**: Modular JavaScript with clear separation of concerns
 - **Statistics Tracking**: Comprehensive game statistics with localStorage persistence
@@ -95,4 +97,4 @@ Feel free to submit issues, feature requests, or pull requests to improve the ga
 
 ---
 
-**Enjoy playing Numbler!** 🎲 
+**Enjoy playing Numberle!** 🎲 

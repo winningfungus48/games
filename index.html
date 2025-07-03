@@ -3,14 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Numbler - Number Guessing Game</title>
+    <title>Numberle - Number Guessing Game</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <div id="welcome-overlay" class="welcome-overlay">
+      <div class="welcome-modal">
+        <button class="welcome-close" id="welcome-close" aria-label="Close">&times;</button>
+        <div class="welcome-content">
+          <h2 class="welcome-title">Welcome to Numberle</h2>
+          <p class="welcome-desc">Get 6 chances to guess a 5-digit number. Each guess must be a valid 5-digit number. After each guess, the color of the tiles will show how close your guess was to the answer.</p>
+          <button class="welcome-play" id="welcome-play">Play</button>
+        </div>
+      </div>
+    </div>
+
     <div class="container">
         <header>
-            <h1>Numbler</h1>
+            <h1>Numberle</h1>
             <p class="subtitle">Guess the 5-digit number in 6 tries</p>
         </header>
 
