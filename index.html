@@ -3,42 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timel - History Year Guessing Game</title>
+    <title>Games Collection</title>
     <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="./styles.css">
+    <link rel="stylesheet" href="main.css">
 </head>
 <body>
-    <div class="timel-container">
-        <header>
-            <h1 class="timel-title">Timel</h1>
-        </header>
-        <main>
-            <div class="event-section">
-                <div id="eventPrompt" class="event-prompt-box"></div>
-            </div>
-            <form id="guessForm" autocomplete="off" class="year-form">
-                <div class="year-input-group">
-                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="digit-input" id="digit1" required>
-                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="digit-input" id="digit2" required>
-                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="digit-input" id="digit3" required>
-                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="digit-input" id="digit4" required>
-                </div>
-                <button type="submit" class="btn" id="guessBtn" disabled>Guess</button>
-            </form>
-            <div id="guessResult" class="guess-result"></div>
-            <div class="guess-history-section">
-                <div id="guessHistory" class="guess-history"></div>
-            </div>
-        </main>
-    </div>
-    <div id="resultModal" class="modal">
-        <div class="modal-content">
-            <h2 id="modalTitle"></h2>
-            <p id="modalAnswer"></p>
-            <p id="modalFact"></p>
-            <button id="playNextBtn" class="btn btn-primary">Play Next</button>
+    <div class="main-container">
+        <h1 class="main-title">Games Collection</h1>
+        <div class="games-list">
+            <button class="game-card" id="timelBtn">
+                <span class="game-title">Timel</span>
+                <span class="game-desc">Guess the year of historical events in this academic trivia game.</span>
+            </button>
+            <button class="game-card" id="numberleBtn">
+                <img src="Numberle/numberle-logo.svg" alt="Numberle Logo" class="game-logo"/>
+                <span class="game-title">Numberle</span>
+                <span class="game-desc">A numbers-based puzzle inspired by Wordle. Guess the equation!</span>
+            </button>
+            <button class="game-card" id="crosswordBtn">
+                <span class="game-title">One Clue Crossword</span>
+                <span class="game-desc">Solve the crossword with just one clue. Test your vocabulary!</span>
+            </button>
         </div>
     </div>
-    <script src="./script.js"></script>
+    <!-- Timel Modal -->
+    <div id="timelModal" class="modal">
+        <div class="modal-content">
+            <h2>Timel</h2>
+            <p>Guess the correct year for a historical event. You have 6 tries per round. Academic, clean, and fun!</p>
+            <button class="btn btn-primary">Play Timel</button>
+        </div>
+    </div>
+    <!-- Numberle Modal -->
+    <div id="numberleModal" class="modal">
+        <div class="modal-content">
+            <img src="Numberle/numberle-logo.svg" alt="Numberle Logo" class="modal-logo"/>
+            <h2>Numberle</h2>
+            <p>Guess the hidden equation in 6 tries. Each guess must be a valid equation. Inspired by Wordle!</p>
+            <button class="btn btn-primary">Play Numberle</button>
+        </div>
+    </div>
+    <!-- Crossword Modal -->
+    <div id="crosswordModal" class="modal">
+        <div class="modal-content">
+            <h2>One Clue Crossword</h2>
+            <p>Fill the crossword grid using just one clue. A unique twist on classic crosswords!</p>
+            <button class="btn btn-primary">Play Crossword</button>
+        </div>
+    </div>
+    <script src="main.js"></script>
 </body>
 </html> 
