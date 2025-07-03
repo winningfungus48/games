@@ -3,44 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>One Clue Crosswords</title>
+    <title>Timel - History Year Guessing Game</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
+    <div class="timel-container">
         <header>
-            <h1 id="themeTitle">Theme: <span id="themeName"></span></h1>
+            <h1>Timel</h1>
+            <p class="subtitle">Guess the year of the event</p>
         </header>
         <main>
-            <div class="main-layout">
-                <div class="crossword-area">
-                    <div class="crossword-section">
-                        <div class="crossword-grid" id="crosswordGrid"></div>
-                    </div>
-                    <div class="active-clue-box" id="activeClueBox">
-                        <span class="clue-badge" id="activeClueLabel"></span>
-                        <span id="activeClueText"></span>
-                    </div>
-                </div>
-                <aside class="clues-panel">
-                    <div class="clues-list">
-                        <h2>Across</h2>
-                        <ul id="acrossClues"></ul>
-                        <h2>Down</h2>
-                        <ul id="downClues"></ul>
-                    </div>
-                </aside>
+            <div class="event-section">
+                <div id="eventPrompt" class="event-prompt"></div>
             </div>
-            <div class="controls">
-                <button id="newPuzzleBtn" class="btn">New Puzzle</button>
+            <form id="guessForm" autocomplete="off">
+                <input type="number" id="yearInput" class="year-input" placeholder="Enter 4-digit year" min="1000" max="2999" required>
+                <button type="submit" class="btn">Guess</button>
+            </form>
+            <div class="guess-history-section">
+                <ul id="guessHistory" class="guess-history"></ul>
             </div>
         </main>
     </div>
-    <!-- Completion Modal -->
-    <div id="completionModal" class="modal">
+    <div id="resultModal" class="modal">
         <div class="modal-content">
-            <h2>🎉 Puzzle Solved! 🎉</h2>
-            <button id="playAgainBtn" class="btn btn-primary">Play Another Puzzle</button>
+            <h2 id="modalTitle"></h2>
+            <p id="modalAnswer"></p>
+            <p id="modalFact"></p>
+            <button id="playNextBtn" class="btn btn-primary">Play Next</button>
         </div>
     </div>
     <script src="script.js"></script>
