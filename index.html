@@ -3,40 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timel - History Year Guessing Game</title>
-    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@600;700&display=swap" rel="stylesheet">
+    <title>One Clue Crosswords</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="timel-container">
+    <div class="container">
         <header>
-            <h1 class="timel-title">Timel</h1>
+            <h1 id="themeTitle">Theme: <span id="themeName"></span></h1>
         </header>
         <main>
-            <div class="event-section">
-                <div id="eventPrompt" class="event-prompt-box"></div>
-            </div>
-            <form id="guessForm" autocomplete="off" class="year-form">
-                <div class="year-input-group">
-                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="digit-input" id="digit1" required>
-                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="digit-input" id="digit2" required>
-                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="digit-input" id="digit3" required>
-                    <input type="text" maxlength="1" pattern="[0-9]" inputmode="numeric" class="digit-input" id="digit4" required>
+            <div class="main-layout">
+                <div class="crossword-area">
+                    <div class="crossword-section">
+                        <div class="crossword-grid" id="crosswordGrid"></div>
+                    </div>
+                    <div class="active-clue-box" id="activeClueBox">
+                        <span class="clue-badge" id="activeClueLabel"></span>
+                        <span id="activeClueText"></span>
+                    </div>
                 </div>
-                <button type="submit" class="btn" id="guessBtn" disabled>Guess</button>
-            </form>
-            <div id="guessResult" class="guess-result"></div>
-            <div class="guess-history-section">
-                <div id="guessHistory" class="guess-history"></div>
+                <aside class="clues-panel">
+                    <div class="clues-list">
+                        <h2>Across</h2>
+                        <ul id="acrossClues"></ul>
+                        <h2>Down</h2>
+                        <ul id="downClues"></ul>
+                    </div>
+                </aside>
+            </div>
+            <div class="controls">
+                <button id="newPuzzleBtn" class="btn">New Puzzle</button>
             </div>
         </main>
     </div>
-    <div id="resultModal" class="modal">
+    <!-- Completion Modal -->
+    <div id="completionModal" class="modal">
         <div class="modal-content">
-            <h2 id="modalTitle"></h2>
-            <p id="modalAnswer"></p>
-            <p id="modalFact"></p>
-            <button id="playNextBtn" class="btn btn-primary">Play Next</button>
+            <h2>🎉 Puzzle Solved! 🎉</h2>
+            <button id="playAgainBtn" class="btn btn-primary">Play Another Puzzle</button>
         </div>
     </div>
     <script src="script.js"></script>
