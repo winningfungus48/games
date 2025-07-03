@@ -1,91 +1,124 @@
-# Numberle - Number Guessing Game
+# One Clue Crosswords
 
-A web-based number guessing game inspired by Wordle, built with HTML, CSS, and JavaScript.
+A web-based word puzzle game where players solve mini crosswords using just one thematic clue. All words in the grid are related to the single clue provided.
 
-## 🎮 Game Overview
+## 🎮 How to Play
 
-Numberle is a number guessing game where players attempt to guess a secret 5-digit number within 6 attempts. The secret number can contain repeated digits, but **no more than 2 instances of any single digit** are allowed, making it challenging yet fair.
+1. **Read the Clue**: Start by reading the single clue at the top of the game
+2. **Fill the Grid**: Click on any square in the crossword grid to start typing
+3. **Navigate**: Use arrow keys or click to move between cells
+4. **Complete Words**: All words in the grid are thematically related to the clue
+5. **Solve the Puzzle**: Fill in all words correctly to complete the puzzle
 
-## 🎯 How to Play
+## 🎯 Game Features
 
-1. **Objective**: Guess the secret 5-digit number in 6 tries or fewer
-2. **Input**: Use the virtual number pad or your keyboard to enter digits
-3. **Feedback**: After each guess, you'll receive color-coded feedback:
-   - 🟩 **Green**: Digit is correct and in the correct position
-   - 🟨 **Yellow**: Digit is in the number but in the wrong position
-   - ⬜ **Gray**: Digit does not appear in the secret number
+- **Single Clue System**: One vague clue that relates to all words in the puzzle
+- **Interactive Grid**: Click to select cells, type letters, and navigate with arrow keys
+- **Real-time Validation**: Visual feedback for correct and incorrect letters
+- **Progress Tracking**: See your completion progress and solve time
+- **Hint System**: Get helpful hints when stuck (limited per puzzle)
+- **Responsive Design**: Works on desktop, tablet, and mobile devices
+- **Multiple Puzzles**: Various themed puzzles to solve
 
-### Example Gameplay
+## 🎨 Example Puzzles
 
-If the secret number is `11234` and you guess `12111`:
-- The first `1` would be green (correct position)
-- The second `1` would be yellow (in the number but wrong position)
-- The remaining digits would be gray (not in the number)
+### Fire Theme
+- **Clue**: "Fire"
+- **Words**: EMBER, BLAZE, SMOKE
+- **Grid**: 6x6 crossword with intersecting words
 
-**Note**: Valid secret numbers include `11234`, `99887`, but not `11123` or `44444`.
+### Ocean Theme  
+- **Clue**: "Ocean"
+- **Words**: WAVE, FISH, SALT
+- **Grid**: 5x5 crossword layout
 
-## 🚀 Features
+### Music Theme
+- **Clue**: "Music" 
+- **Words**: BEAT, SONG, TUNE
+- **Grid**: 6x6 crossword pattern
 
-- **Responsive Design**: Works seamlessly on desktop and mobile devices
-- **Virtual Number Pad**: Touch-friendly number input for mobile users
-- **Keyboard Support**: Full keyboard navigation and input
-- **Input Validation**: Ensures guesses are exactly 5 numeric digits
-- **Game Statistics**: Tracks games played, wins, current streak, and best streak
-- **Local Storage**: Persists statistics between sessions
-- **Modern UI**: Clean, minimalist design with smooth animations
-- **Accessibility**: Keyboard navigation and screen reader friendly
+## 🎮 Controls
 
-## 🎨 Technical Details
+- **Mouse**: Click on any cell to select and type
+- **Arrow Keys**: Navigate between cells
+- **Backspace**: Delete letter and move to previous cell
+- **Enter**: Check solution
+- **Space**: Not used (single letter input only)
 
-### Game Logic
-- **Secret Number Generation**: Uses pseudo-random number generation with validation (max 2 instances of any digit)
-- **Feedback Algorithm**: Two-pass evaluation system for accurate feedback
-- **State Management**: Modular JavaScript with clear separation of concerns
-- **Statistics Tracking**: Comprehensive game statistics with localStorage persistence
+## 🏆 Game Mechanics
 
-### UI Components
-- **6×5 Grid**: Displays guesses and feedback
-- **Virtual Number Pad**: 0-9 buttons with action buttons (Delete, Enter)
-- **Modal System**: Game results and statistics display
-- **Responsive Layout**: Adapts to different screen sizes
+- **Word Validation**: All words must be completed correctly
+- **Visual Feedback**: 
+  - Green: Correct letter
+  - Red: Incorrect letter  
+  - Blue: Active/selected cell
+- **Auto-completion**: Automatically moves to next cell after typing
+- **Completion Detection**: Game automatically detects when puzzle is solved
 
-### Color Scheme
-- **Green (#10b981)**: Correct digit in correct position
-- **Yellow (#f59e0b)**: Correct digit in wrong position  
-- **Gray (#6b7280)**: Digit not in the number
-- **Blue (#3b82f6)**: Primary action button
+## 🛠️ Technical Details
 
-## 🛠️ Installation & Usage
+- **Pure JavaScript**: No external dependencies
+- **Responsive CSS**: Mobile-friendly design
+- **Local Storage**: Game state management
+- **Modular Design**: Easy to add new puzzles
 
-1. **Download**: Clone or download the project files
-2. **Open**: Open `index.html` in any modern web browser
-3. **Play**: Start guessing numbers immediately!
-
-No build process or dependencies required - it's pure HTML, CSS, and JavaScript.
-
-## 📱 Browser Support
+## 📱 Browser Compatibility
 
 - Chrome (recommended)
 - Firefox
 - Safari
 - Edge
-- Mobile browsers (iOS Safari, Chrome Mobile)
+- Mobile browsers
 
-## 🎯 Game Statistics
+## 🚀 Getting Started
 
-The game tracks the following statistics:
-- **Games Played**: Total number of games attempted
-- **Games Won**: Number of successful guesses
-- **Current Streak**: Consecutive wins
-- **Best Streak**: Longest winning streak achieved
+1. Open `index.html` in your web browser
+2. The game will automatically load with a random puzzle
+3. Start solving by clicking on any cell in the grid
+4. Use the controls to navigate and complete the puzzle
 
-Statistics are automatically saved to localStorage and persist between browser sessions.
+## 🎨 Customization
 
-## 🔧 Customization
+### Adding New Puzzles
 
-The game is easily customizable by modifying the following constants in `script.js`:
-- `maxAttempts`: Number of allowed guesses (default: 6)
-- `numberLength`: Length of the secret number (default: 5)
+To add a new puzzle, edit the `puzzles` array in `script.js`:
+
+```javascript
+{
+    clue: "Your Clue",
+    grid: [
+        [1, 1, 1, 1, 1],
+        [1, 0, 0, 0, 1],
+        [1, 0, 1, 0, 1],
+        [1, 0, 0, 0, 1],
+        [1, 1, 1, 1, 1]
+    ],
+    words: [
+        { word: "WORD1", start: { row: 1, col: 1 }, direction: "across" },
+        { word: "WORD2", start: { row: 1, col: 1 }, direction: "down" }
+    ],
+    hints: [
+        "Hint for word 1",
+        "Hint for word 2"
+    ]
+}
+```
+
+### Grid Layout
+- `1`: Active cell where letters can be placed
+- `0`: Empty cell (no input allowed)
+
+### Word Directions
+- `"across"`: Word reads left to right
+- `"down"`: Word reads top to bottom
+
+## 🎯 Tips for Players
+
+1. **Start with the clue**: Think about all possible words related to the theme
+2. **Look for intersections**: Common letters between words can help you solve
+3. **Use hints wisely**: Save hints for when you're really stuck
+4. **Check your work**: Use the "Check Solution" button to verify progress
+5. **Practice makes perfect**: Try different puzzles to improve your skills
 
 ## 📄 License
 
@@ -93,8 +126,12 @@ This project is open source and available under the MIT License.
 
 ## 🤝 Contributing
 
-Feel free to submit issues, feature requests, or pull requests to improve the game!
+Feel free to contribute by:
+- Adding new puzzles
+- Improving the UI/UX
+- Adding new features
+- Reporting bugs
 
 ---
 
-**Enjoy playing Numberle!** 🎲 
+**Enjoy solving One Clue Crosswords!** 🧩✨ 
