@@ -3,66 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Numberle - Number Guessing Game</title>
+    <title>One Clue Crosswords</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div id="welcome-overlay" class="welcome-overlay">
-      <div class="welcome-modal">
-        <button class="welcome-close" id="welcome-close" aria-label="Close">&times;</button>
-        <div class="welcome-content">
-          <img src="numberle-logo.svg" alt="Numberle logo" class="numberle-logo" style="margin-bottom:18px;">
-          <h2 class="welcome-title">Welcome to Numberle</h2>
-          <p class="welcome-desc">Get 6 chances to guess<br>a 5-digit number</p>
-          <button class="welcome-play" id="welcome-play">Play</button>
-        </div>
-      </div>
-    </div>
-
     <div class="container">
         <header>
-            <div class="logo-title-row">
-                <img src="numberle-logo.svg" alt="Numberle logo" class="numberle-logo">
-                <h1>Numberle</h1>
-                <button id="replay-btn" class="replay-btn" title="Restart Game">&#x1F501;</button>
-            </div>
-            <p class="subtitle">Guess the 5-digit number in 6 tries</p>
+            <h1>One Clue Crosswords</h1>
+            <p class="subtitle">Solve the puzzle with just one clue!</p>
         </header>
 
-        <div class="game-container">
-            <div id="board" class="board"></div>
-            
-            <div class="message" id="message"></div>
-            
-            <div class="number-pad-container">
-                <div class="number-pad" id="number-pad"></div>
-                <div class="action-buttons">
-                    <button id="delete-btn" class="action-btn">⌫</button>
-                    <button id="enter-btn" class="action-btn">Enter</button>
+        <main>
+            <div class="game-area">
+                <div class="clue-section">
+                    <h2>Clue:</h2>
+                    <div class="clue-display" id="clueDisplay"></div>
+                </div>
+
+                <div class="crossword-section">
+                    <div class="crossword-grid" id="crosswordGrid"></div>
+                </div>
+
+                <div class="controls">
+                    <button id="newPuzzleBtn" class="btn">New Puzzle</button>
+                    <button id="checkBtn" class="btn">Check Solution</button>
+                    <button id="hintBtn" class="btn">Hint</button>
+                </div>
+
+                <div class="stats">
+                    <span id="progressDisplay">Progress: 0/0</span>
+                    <span id="timerDisplay">Time: 00:00</span>
                 </div>
             </div>
-        </div>
+        </main>
+    </div>
 
-        <div class="modal" id="modal">
-            <div class="modal-content">
-                <h2 id="modal-title"></h2>
-                <p id="modal-message"></p>
-                <div id="stats" class="stats"></div>
-                <button id="play-again-btn" class="play-again-btn">Play Again</button>
-                <button id="close-modal" class="close-button">Close</button>
+    <!-- Completion Modal -->
+    <div id="completionModal" class="modal">
+        <div class="modal-content">
+            <h2>🎉 Puzzle Solved! 🎉</h2>
+            <p id="completionMessage"></p>
+            <div class="modal-stats">
+                <p>Time: <span id="finalTime"></span></p>
+                <p>Hints used: <span id="hintsUsed"></span></p>
             </div>
+            <button id="playAgainBtn" class="btn btn-primary">Play Another Puzzle</button>
         </div>
+    </div>
 
-        <div id="endgame-overlay" class="endgame-overlay">
-            <div class="endgame-modal">
-                <div class="endgame-content">
-                    <h2 class="endgame-title" id="endgame-title"></h2>
-                    <p class="endgame-message" id="endgame-message"></p>
-                    <button class="playagain-btn" id="playagain-btn">Play Again</button>
-                    <button class="endgame-close" id="endgame-close">Close</button>
-                </div>
-            </div>
+    <!-- Hint Modal -->
+    <div id="hintModal" class="modal">
+        <div class="modal-content">
+            <h2>💡 Hint</h2>
+            <p id="hintText"></p>
+            <button id="closeHintBtn" class="btn">Close</button>
         </div>
     </div>
 

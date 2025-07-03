@@ -1,576 +1,439 @@
-// Game state
-let gameState = {
-    secretNumber: '',
-    currentRow: 0,
-    currentCol: 0,
-    gameOver: false,
-    gameWon: false,
-    maxAttempts: 6,
-    numberLength: 5
-};
-
-// Statistics
-let stats = {
-    gamesPlayed: 0,
-    gamesWon: 0,
-    currentStreak: 0,
-    bestStreak: 0
-};
-
-// DOM elements
-const board = document.getElementById('board');
-const message = document.getElementById('message');
-const numberPad = document.getElementById('number-pad');
-const deleteBtn = document.getElementById('delete-btn');
-const enterBtn = document.getElementById('enter-btn');
-const modal = document.getElementById('modal');
-const modalTitle = document.getElementById('modal-title');
-const modalMessage = document.getElementById('modal-message');
-const statsDiv = document.getElementById('stats');
-const playAgainBtn = document.getElementById('play-again-btn');
-const closeModalBtn = document.getElementById('close-modal');
-const difficultySelect = document.getElementById('difficulty-select');
-const subtitleDigits = document.getElementById('subtitle-digits');
-
-// Welcome modal logic
-const welcomeOverlay = document.getElementById('welcome-overlay');
-const welcomePlay = document.getElementById('welcome-play');
-const welcomeClose = document.getElementById('welcome-close');
-
-// Endgame modal logic
-const endgameOverlay = document.getElementById('endgame-overlay');
-const endgameTitle = document.getElementById('endgame-title');
-const endgameMessage = document.getElementById('endgame-message');
-const playagainBtn = document.getElementById('playagain-btn');
-const endgameClose = document.getElementById('endgame-close');
-const replayBtn = document.getElementById('replay-btn');
-
-function showWelcomeModal() {
-    welcomeOverlay.classList.remove('hide');
-    document.body.style.overflow = 'hidden';
-}
-
-function hideWelcomeModal() {
-    welcomeOverlay.classList.add('hide');
-    setTimeout(() => {
-        welcomeOverlay.style.display = 'none';
-        document.body.style.overflow = '';
-    }, 300);
-}
-
-welcomePlay.addEventListener('click', hideWelcomeModal);
-welcomeClose.addEventListener('click', hideWelcomeModal);
-
-function showEndgameModal(won) {
-    endgameOverlay.classList.add('show');
-    endgameOverlay.classList.remove('hide');
-    if (won) {
-        endgameTitle.textContent = `You solved the number in ${gameState.currentRow + 1} tries!`;
-        endgameMessage.textContent = '';
-    } else {
-        endgameTitle.textContent = 'Game Over!';
-        endgameMessage.textContent = `The Numberle was ${gameState.secretNumber}.`;
-    }
-}
-
-function hideEndgameModal() {
-    endgameOverlay.classList.add('hide');
-    setTimeout(() => {
-        endgameOverlay.classList.remove('show');
-        endgameOverlay.classList.remove('hide');
-    }, 300);
-}
-
-endgameClose.addEventListener('click', hideEndgameModal);
-playagainBtn.addEventListener('click', () => {
-    hideEndgameModal();
-    setTimeout(() => startNewGame(), 350);
-});
-replayBtn.addEventListener('click', () => {
-    startNewGame();
-});
-
-function startNewGame() {
-    resetGameState();
-    generateSecretNumber();
-    createBoard();
-    createNumberPad();
-    setupEventListeners();
-    updateEnterButton();
-    clearMessage();
-    closeModal();
-    resetNumberPadColors();
-}
-
-function generateSecretNumber() {
-    let number;
-    let attempts = 0;
-    const maxAttempts = 200;
-    do {
-        number = '';
-        const digitCounts = {};
-        for (let i = 0; i < 5; i++) {
-            let d;
-            let tries = 0;
-            do {
-                d = Math.floor(Math.random() * 10);
-                tries++;
-            } while (digitCounts[d] >= 2 && Math.random() > 0.15 && tries < 10); // 85% chance to avoid >2 repeats
-            number += d;
-            digitCounts[d] = (digitCounts[d] || 0) + 1;
-        }
-        attempts++;
-    } while (!isValidSecretNumber(number) && attempts < maxAttempts);
-    if (attempts >= maxAttempts) {
-        console.warn('Could not generate valid number after', maxAttempts, 'attempts, using:', number);
-    }
-    gameState.secretNumber = number;
-    console.log('Secret number:', gameState.secretNumber);
-}
-
-// Check if a number is valid (no more than 2 instances of any digit)
-function isValidSecretNumber(number) {
-    const digitCounts = {};
-    
-    for (let digit of number) {
-        digitCounts[digit] = (digitCounts[digit] || 0) + 1;
-        if (digitCounts[digit] > 2) {
-            return false;
-        }
-    }
-    
-    return true;
-}
-
-// Create the game board
-function createBoard() {
-    board.innerHTML = '';
-    for (let row = 0; row < gameState.maxAttempts; row++) {
-        const rowDiv = document.createElement('div');
-        rowDiv.className = 'row';
-        rowDiv.dataset.row = row;
-        for (let col = 0; col < gameState.numberLength; col++) {
-            const tile = document.createElement('div');
-            tile.className = 'tile';
-            tile.dataset.row = row;
-            tile.dataset.col = col;
-            rowDiv.appendChild(tile);
-        }
-        board.appendChild(rowDiv);
-    }
-}
-
-// Create the virtual number pad
-function createNumberPad() {
-    numberPad.innerHTML = '';
-    
-    // Create number buttons 0-9
-    for (let i = 0; i < 10; i++) {
-        const btn = document.createElement('button');
-        btn.className = 'number-btn';
-        btn.textContent = i;
-        btn.dataset.number = i;
-        btn.addEventListener('click', () => inputNumber(i));
-        numberPad.appendChild(btn);
-    }
-}
-
-// Setup event listeners
-function setupEventListeners() {
-    // Keyboard input
-    document.addEventListener('keydown', handleKeydown);
-    
-    // Button clicks
-    deleteBtn.addEventListener('click', deleteNumber);
-    enterBtn.addEventListener('click', submitGuess);
-    playAgainBtn.addEventListener('click', startNewGame);
-    closeModalBtn.addEventListener('click', closeModal);
-    
-    // Modal backdrop click
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
-}
-
-// Handle keyboard input
-function handleKeydown(e) {
-    if (gameState.gameOver) return;
-    
-    if (e.key >= '0' && e.key <= '9') {
-        inputNumber(parseInt(e.key));
-    } else if (e.key === 'Enter') {
-        submitGuess();
-    } else if (e.key === 'Backspace') {
-        deleteNumber();
-    }
-}
-
-// Input a number
-function inputNumber(num) {
-    if (gameState.gameOver || gameState.currentCol >= gameState.numberLength) return;
-    animateNumberKey(num);
-    const tile = getCurrentTile();
-    if (tile) {
-        tile.textContent = num;
-        tile.classList.add('filled');
-        gameState.currentCol++;
-        updateEnterButton();
-    }
-}
-
-// Delete the last number
-function deleteNumber() {
-    if (gameState.gameOver || gameState.currentCol <= 0) return;
-    
-    gameState.currentCol--;
-    const tile = getCurrentTile();
-    if (tile) {
-        tile.textContent = '';
-        tile.classList.remove('filled');
-        updateEnterButton();
-    }
-}
-
-// Get the current tile
-function getCurrentTile() {
-    return document.querySelector(`[data-row="${gameState.currentRow}"][data-col="${gameState.currentCol}"]`);
-}
-
-// Update enter button state
-function updateEnterButton() {
-    const isComplete = gameState.currentCol === gameState.numberLength;
-    enterBtn.disabled = !isComplete;
-}
-
-// Submit the current guess
-function submitGuess() {
-    if (gameState.gameOver || gameState.currentCol !== gameState.numberLength) return;
-    
-    const guess = getCurrentGuess();
-    if (!isValidGuess(guess)) {
-        showMessage('Please enter exactly 5 digits');
-        shakeRow();
-        return;
-    }
-    
-    const feedback = evaluateGuess(guess);
-    displayFeedback(feedback);
-    
-    if (guess === gameState.secretNumber) {
-        gameWon();
-    } else if (gameState.currentRow === gameState.maxAttempts - 1) {
-        gameLost();
-    } else {
-        nextRow();
-    }
-}
-
-// Get the current guess as a string
-function getCurrentGuess() {
-    let guess = '';
-    for (let col = 0; col < gameState.numberLength; col++) {
-        const tile = document.querySelector(`[data-row="${gameState.currentRow}"][data-col="${col}"]`);
-        guess += tile.textContent;
-    }
-    return guess;
-}
-
-// Validate the guess
-function isValidGuess(guess) {
-    return /^\d{5}$/.test(guess);
-}
-
-// Evaluate the guess and return feedback
-function evaluateGuess(guess) {
-    const feedback = [];
-    const secretArray = gameState.secretNumber.split('');
-    const guessArray = guess.split('');
-    const used = new Array(gameState.numberLength).fill(false);
-    
-    // First pass: mark correct digits
-    for (let i = 0; i < gameState.numberLength; i++) {
-        if (guessArray[i] === secretArray[i]) {
-            feedback[i] = 'correct';
-            used[i] = true;
-        }
-    }
-    
-    // Second pass: mark present digits
-    for (let i = 0; i < gameState.numberLength; i++) {
-        if (feedback[i] === 'correct') continue;
+class OneClueCrosswords {
+    constructor() {
+        this.currentPuzzle = null;
+        this.grid = [];
+        this.currentCell = { row: 0, col: 0 };
+        this.startTime = null;
+        this.hintsUsed = 0;
+        this.isGameActive = false;
         
-        for (let j = 0; j < gameState.numberLength; j++) {
-            if (!used[j] && guessArray[i] === secretArray[j]) {
-                feedback[i] = 'present';
-                used[j] = true;
+        this.initializeElements();
+        this.bindEvents();
+        this.loadPuzzles();
+        this.startNewPuzzle();
+    }
+
+    initializeElements() {
+        this.clueDisplay = document.getElementById('clueDisplay');
+        this.crosswordGrid = document.getElementById('crosswordGrid');
+        this.progressDisplay = document.getElementById('progressDisplay');
+        this.timerDisplay = document.getElementById('timerDisplay');
+        this.completionModal = document.getElementById('completionModal');
+        this.hintModal = document.getElementById('hintModal');
+        this.hintText = document.getElementById('hintText');
+        this.finalTime = document.getElementById('finalTime');
+        this.hintsUsed = document.getElementById('hintsUsed');
+        this.completionMessage = document.getElementById('completionMessage');
+    }
+
+    bindEvents() {
+        document.getElementById('newPuzzleBtn').addEventListener('click', () => this.startNewPuzzle());
+        document.getElementById('checkBtn').addEventListener('click', () => this.checkSolution());
+        document.getElementById('hintBtn').addEventListener('click', () => this.showHint());
+        document.getElementById('playAgainBtn').addEventListener('click', () => this.closeModal());
+        document.getElementById('closeHintBtn').addEventListener('click', () => this.closeHintModal());
+        
+        document.addEventListener('keydown', (e) => this.handleKeyPress(e));
+        document.addEventListener('click', (e) => this.handleClick(e));
+    }
+
+    loadPuzzles() {
+        this.puzzles = [
+            {
+                clue: "Fire",
+                grid: [
+                    [1, 1, 1, 1, 1, 1],
+                    [1, 0, 0, 0, 0, 1],
+                    [1, 0, 1, 1, 0, 1],
+                    [1, 0, 1, 1, 0, 1],
+                    [1, 0, 0, 0, 0, 1],
+                    [1, 1, 1, 1, 1, 1]
+                ],
+                words: [
+                    { word: "EMBER", start: { row: 1, col: 1 }, direction: "across" },
+                    { word: "BLAZE", start: { row: 2, col: 1 }, direction: "down" },
+                    { word: "SMOKE", start: { row: 1, col: 2 }, direction: "down" }
+                ],
+                hints: [
+                    "A glowing piece of coal or wood",
+                    "A bright, intense flame",
+                    "The visible vapor from burning"
+                ]
+            },
+            {
+                clue: "Ocean",
+                grid: [
+                    [1, 1, 1, 1, 1],
+                    [1, 0, 0, 0, 1],
+                    [1, 0, 1, 0, 1],
+                    [1, 0, 0, 0, 1],
+                    [1, 1, 1, 1, 1]
+                ],
+                words: [
+                    { word: "WAVE", start: { row: 1, col: 1 }, direction: "across" },
+                    { word: "FISH", start: { row: 1, col: 1 }, direction: "down" },
+                    { word: "SALT", start: { row: 2, col: 2 }, direction: "down" }
+                ],
+                hints: [
+                    "A moving ridge of water",
+                    "Aquatic creature with gills",
+                    "What makes ocean water taste different"
+                ]
+            },
+            {
+                clue: "Music",
+                grid: [
+                    [1, 1, 1, 1, 1, 1],
+                    [1, 0, 0, 0, 0, 1],
+                    [1, 0, 1, 1, 0, 1],
+                    [1, 0, 1, 1, 0, 1],
+                    [1, 0, 0, 0, 0, 1],
+                    [1, 1, 1, 1, 1, 1]
+                ],
+                words: [
+                    { word: "BEAT", start: { row: 1, col: 1 }, direction: "across" },
+                    { word: "SONG", start: { row: 1, col: 1 }, direction: "down" },
+                    { word: "TUNE", start: { row: 2, col: 2 }, direction: "down" }
+                ],
+                hints: [
+                    "Rhythmic pattern in music",
+                    "A musical composition with lyrics",
+                    "A melody or musical piece"
+                ]
+            },
+            {
+                clue: "Food",
+                grid: [
+                    [1, 1, 1, 1, 1],
+                    [1, 0, 0, 0, 1],
+                    [1, 0, 1, 0, 1],
+                    [1, 0, 0, 0, 1],
+                    [1, 1, 1, 1, 1]
+                ],
+                words: [
+                    { word: "BREAD", start: { row: 1, col: 1 }, direction: "across" },
+                    { word: "APPLE", start: { row: 1, col: 1 }, direction: "down" },
+                    { word: "PIZZA", start: { row: 2, col: 2 }, direction: "down" }
+                ],
+                hints: [
+                    "Baked food made from flour",
+                    "A round, red or green fruit",
+                    "Italian dish with cheese and toppings"
+                ]
+            },
+            {
+                clue: "Nature",
+                grid: [
+                    [1, 1, 1, 1, 1, 1],
+                    [1, 0, 0, 0, 0, 1],
+                    [1, 0, 1, 1, 0, 1],
+                    [1, 0, 1, 1, 0, 1],
+                    [1, 0, 0, 0, 0, 1],
+                    [1, 1, 1, 1, 1, 1]
+                ],
+                words: [
+                    { word: "TREE", start: { row: 1, col: 1 }, direction: "across" },
+                    { word: "FLOWER", start: { row: 1, col: 1 }, direction: "down" },
+                    { word: "GRASS", start: { row: 2, col: 2 }, direction: "down" }
+                ],
+                hints: [
+                    "Tall plant with a trunk and branches",
+                    "Colorful part of a plant that produces seeds",
+                    "Green ground cover in fields and lawns"
+                ]
+            }
+        ];
+    }
+
+    startNewPuzzle() {
+        this.currentPuzzle = this.puzzles[Math.floor(Math.random() * this.puzzles.length)];
+        this.hintsUsed = 0;
+        this.startTime = Date.now();
+        this.isGameActive = true;
+        
+        this.renderPuzzle();
+        this.startTimer();
+        this.updateProgress();
+    }
+
+    renderPuzzle() {
+        this.clueDisplay.textContent = this.currentPuzzle.clue;
+        this.renderGrid();
+    }
+
+    renderGrid() {
+        this.crosswordGrid.innerHTML = '';
+        this.grid = [];
+        
+        const puzzleGrid = this.currentPuzzle.grid;
+        const rows = puzzleGrid.length;
+        const cols = puzzleGrid[0].length;
+        
+        this.crosswordGrid.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+        
+        for (let row = 0; row < rows; row++) {
+            this.grid[row] = [];
+            for (let col = 0; col < cols; col++) {
+                const cell = document.createElement('input');
+                cell.type = 'text';
+                cell.className = 'crossword-cell';
+                cell.maxLength = 1;
+                cell.dataset.row = row;
+                cell.dataset.col = col;
+                
+                if (puzzleGrid[row][col] === 0) {
+                    cell.classList.add('empty');
+                    cell.disabled = true;
+                    this.grid[row][col] = null;
+                } else {
+                    this.grid[row][col] = '';
+                    cell.addEventListener('focus', () => this.setActiveCell(row, col));
+                    cell.addEventListener('input', (e) => this.handleCellInput(e, row, col));
+                }
+                
+                this.crosswordGrid.appendChild(cell);
+            }
+        }
+        
+        this.setActiveCell(0, 0);
+    }
+
+    setActiveCell(row, col) {
+        // Remove active class from all cells
+        document.querySelectorAll('.crossword-cell').forEach(cell => {
+            cell.classList.remove('active');
+        });
+        
+        // Find the next valid cell if current is empty
+        while (this.currentPuzzle.grid[row][col] === 0) {
+            col++;
+            if (col >= this.currentPuzzle.grid[0].length) {
+                col = 0;
+                row++;
+                if (row >= this.currentPuzzle.grid.length) {
+                    row = 0;
+                }
+            }
+        }
+        
+        this.currentCell = { row, col };
+        const cell = this.getCellElement(row, col);
+        if (cell) {
+            cell.classList.add('active');
+            cell.focus();
+        }
+    }
+
+    getCellElement(row, col) {
+        return document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+    }
+
+    handleCellInput(event, row, col) {
+        const value = event.target.value.toUpperCase();
+        event.target.value = value;
+        this.grid[row][col] = value;
+        
+        if (value && this.isValidCell(row, col + 1)) {
+            this.setActiveCell(row, col + 1);
+        }
+        
+        this.updateProgress();
+        this.checkCompletion();
+    }
+
+    handleKeyPress(event) {
+        if (!this.isGameActive) return;
+        
+        const { key } = event;
+        const { row, col } = this.currentCell;
+        
+        switch (key) {
+            case 'ArrowUp':
+                event.preventDefault();
+                this.moveToCell(row - 1, col);
                 break;
+            case 'ArrowDown':
+                event.preventDefault();
+                this.moveToCell(row + 1, col);
+                break;
+            case 'ArrowLeft':
+                event.preventDefault();
+                this.moveToCell(row, col - 1);
+                break;
+            case 'ArrowRight':
+                event.preventDefault();
+                this.moveToCell(row, col + 1);
+                break;
+            case 'Backspace':
+                if (this.grid[row][col] === '') {
+                    event.preventDefault();
+                    this.moveToCell(row, col - 1);
+                }
+                break;
+        }
+    }
+
+    moveToCell(row, col) {
+        if (this.isValidCell(row, col)) {
+            this.setActiveCell(row, col);
+        }
+    }
+
+    isValidCell(row, col) {
+        return row >= 0 && row < this.currentPuzzle.grid.length &&
+               col >= 0 && col < this.currentPuzzle.grid[0].length &&
+               this.currentPuzzle.grid[row][col] === 1;
+    }
+
+    handleClick(event) {
+        if (event.target.classList.contains('crossword-cell') && !event.target.disabled) {
+            const row = parseInt(event.target.dataset.row);
+            const col = parseInt(event.target.dataset.col);
+            this.setActiveCell(row, col);
+        }
+    }
+
+    updateProgress() {
+        let filled = 0;
+        let total = 0;
+        
+        for (let row = 0; row < this.grid.length; row++) {
+            for (let col = 0; col < this.grid[row].length; col++) {
+                if (this.currentPuzzle.grid[row][col] === 1) {
+                    total++;
+                    if (this.grid[row][col] && this.grid[row][col] !== '') {
+                        filled++;
+                    }
+                }
             }
         }
         
-        if (!feedback[i]) {
-            feedback[i] = 'absent';
-        }
+        this.progressDisplay.textContent = `Progress: ${filled}/${total}`;
     }
-    
-    return feedback;
-}
 
-// Display feedback on the board
-function displayFeedback(feedback) {
-    animateTilePop(gameState.currentRow, feedback, () => {
-        updateNumberPadColors(feedback, getCurrentGuess());
-    });
-}
-
-// Move to the next row
-function nextRow() {
-    gameState.currentRow++;
-    gameState.currentCol = 0;
-    updateEnterButton();
-    clearMessage();
-}
-
-// Shake the current row
-function shakeRow() {
-    const row = document.querySelector(`[data-row="${gameState.currentRow}"]`);
-    row.classList.remove('shake');
-    void row.offsetWidth;
-    row.classList.add('shake');
-    setTimeout(() => {
-        row.classList.remove('shake');
-    }, 400);
-}
-
-// Game won
-function gameWon() {
-    gameState.gameOver = true;
-    gameState.gameWon = true;
-    showEndgameModal(true);
-}
-
-// Game lost
-function gameLost() {
-    gameState.gameOver = true;
-    gameState.gameWon = false;
-    showEndgameModal(false);
-}
-
-// Show game over modal
-function showGameOverModal(title, message) {
-    modalTitle.textContent = title;
-    modalMessage.textContent = message;
-    displayStats();
-    modal.classList.add('show');
-}
-
-// Display statistics
-function displayStats() {
-    statsDiv.innerHTML = `
-        <div class="stat">
-            <div class="stat-value">${stats.gamesPlayed}</div>
-            <div class="stat-label">Games Played</div>
-        </div>
-        <div class="stat">
-            <div class="stat-value">${stats.gamesWon}</div>
-            <div class="stat-label">Games Won</div>
-        </div>
-        <div class="stat">
-            <div class="stat-value">${stats.currentStreak}</div>
-            <div class="stat-label">Current Streak</div>
-        </div>
-        <div class="stat">
-            <div class="stat-value">${stats.bestStreak}</div>
-            <div class="stat-label">Best Streak</div>
-        </div>
-    `;
-}
-
-// Update statistics
-function updateStats(won) {
-    stats.gamesPlayed++;
-    
-    if (won) {
-        stats.gamesWon++;
-        stats.currentStreak++;
-        if (stats.currentStreak > stats.bestStreak) {
-            stats.bestStreak = stats.currentStreak;
-        }
-    } else {
-        stats.currentStreak = 0;
-    }
-    
-    saveStats();
-}
-
-// Load statistics from localStorage
-function loadStats() {
-    const saved = localStorage.getItem('numbler-stats');
-    if (saved) {
-        stats = { ...stats, ...JSON.parse(saved) };
-    }
-}
-
-// Save statistics to localStorage
-function saveStats() {
-    localStorage.setItem('numbler-stats', JSON.stringify(stats));
-}
-
-// Reset number pad key colors
-function resetNumberPadColors() {
-    const btns = numberPad.querySelectorAll('.number-btn');
-    btns.forEach(btn => {
-        btn.classList.remove('correct', 'present', 'absent');
-    });
-}
-
-// Reset game state
-function resetGameState() {
-    gameState = {
-        secretNumber: '',
-        currentRow: 0,
-        currentCol: 0,
-        gameOver: false,
-        gameWon: false,
-        maxAttempts: 6,
-        numberLength: 5
-    };
-}
-
-// Show message
-function showMessage(text) {
-    message.textContent = text;
-}
-
-// Clear message
-function clearMessage() {
-    message.textContent = '';
-}
-
-// Close modal
-function closeModal() {
-    modal.classList.remove('show');
-}
-
-// Helper: update number key feedback colors
-function updateNumberPadColors(feedback, guess) {
-    // Track best status for each digit
-    const bestStatus = {};
-    // Check all previous guesses for best status
-    for (let row = 0; row <= gameState.currentRow; row++) {
-        let rowGuess = '';
-        let rowFeedback = [];
-        if (row === gameState.currentRow) {
-            rowGuess = guess;
-            rowFeedback = feedback;
-        } else {
-            // Get guess and feedback from previous rows
-            rowGuess = '';
-            for (let col = 0; col < gameState.numberLength; col++) {
-                const tile = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
-                rowGuess += tile.textContent;
+    startTimer() {
+        this.timerInterval = setInterval(() => {
+            if (this.isGameActive) {
+                const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                this.timerDisplay.textContent = `Time: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             }
-            rowFeedback = [];
-            for (let col = 0; col < gameState.numberLength; col++) {
-                if (tileHasClass(row, col, 'correct')) rowFeedback[col] = 'correct';
-                else if (tileHasClass(row, col, 'present')) rowFeedback[col] = 'present';
-                else if (tileHasClass(row, col, 'absent')) rowFeedback[col] = 'absent';
+        }, 1000);
+    }
+
+    checkSolution() {
+        let allCorrect = true;
+        
+        // Clear previous validation
+        document.querySelectorAll('.crossword-cell').forEach(cell => {
+            cell.classList.remove('correct', 'incorrect');
+        });
+        
+        // Check each word
+        this.currentPuzzle.words.forEach(word => {
+            const wordCorrect = this.checkWord(word);
+            if (!wordCorrect) {
+                allCorrect = false;
+            }
+        });
+        
+        if (allCorrect) {
+            this.completePuzzle();
+        }
+        
+        return allCorrect;
+    }
+
+    checkWord(word) {
+        const { start, direction, word: targetWord } = word;
+        let currentWord = '';
+        let isCorrect = true;
+        
+        for (let i = 0; i < targetWord.length; i++) {
+            const row = direction === 'down' ? start.row + i : start.row;
+            const col = direction === 'across' ? start.col + i : start.col;
+            
+            const cellValue = this.grid[row][col] || '';
+            currentWord += cellValue;
+            
+            const cell = this.getCellElement(row, col);
+            if (cellValue === targetWord[i]) {
+                cell.classList.add('correct');
+            } else if (cellValue !== '') {
+                cell.classList.add('incorrect');
+                isCorrect = false;
             }
         }
-        for (let i = 0; i < rowGuess.length; i++) {
-            const digit = rowGuess[i];
-            if (!digit) continue;
-            if (rowFeedback[i] === 'correct') {
-                bestStatus[digit] = 'correct';
-            } else if (rowFeedback[i] === 'present' && bestStatus[digit] !== 'correct') {
-                bestStatus[digit] = 'present';
-            } else if (rowFeedback[i] === 'absent' && !bestStatus[digit]) {
-                bestStatus[digit] = 'absent';
+        
+        return isCorrect;
+    }
+
+    checkCompletion() {
+        let allFilled = true;
+        let allCorrect = true;
+        
+        for (let row = 0; row < this.grid.length; row++) {
+            for (let col = 0; col < this.grid[row].length; col++) {
+                if (this.currentPuzzle.grid[row][col] === 1) {
+                    if (!this.grid[row][col] || this.grid[row][col] === '') {
+                        allFilled = false;
+                    }
+                }
+            }
+        }
+        
+        if (allFilled) {
+            allCorrect = this.checkSolution();
+            if (allCorrect) {
+                this.completePuzzle();
             }
         }
     }
-    // Apply best status to number keys
-    for (let d = 0; d <= 9; d++) {
-        const btn = numberPad.querySelector(`.number-btn[data-number="${d}"]`);
-        if (!btn) continue;
-        btn.classList.remove('correct', 'present', 'absent');
-        if (bestStatus[d] === 'correct') btn.classList.add('correct');
-        else if (bestStatus[d] === 'present') btn.classList.add('present');
-        else if (bestStatus[d] === 'absent') btn.classList.add('absent');
-    }
-}
 
-function tileHasClass(row, col, className) {
-    const tile = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
-    return tile && tile.classList.contains(className);
-}
-
-// Animate number key press
-function animateNumberKey(num) {
-    const btn = numberPad.querySelector(`.number-btn[data-number="${num}"]`);
-    if (btn) {
-        btn.classList.remove('bounce');
-        // Force reflow for restart animation
-        void btn.offsetWidth;
-        btn.classList.add('bounce');
-        setTimeout(() => btn.classList.remove('bounce'), 180);
-    }
-}
-
-// Animate tile pop for a row
-function animateTilePop(rowIdx, feedback, cb) {
-    const row = document.querySelector(`[data-row="${rowIdx}"]`);
-    const tiles = row.querySelectorAll('.tile');
-    tiles.forEach((tile, i) => {
+    completePuzzle() {
+        this.isGameActive = false;
+        clearInterval(this.timerInterval);
+        
+        const elapsed = Math.floor((Date.now() - this.startTime) / 1000);
+        const minutes = Math.floor(elapsed / 60);
+        const seconds = elapsed % 60;
+        const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        this.finalTime.textContent = timeString;
+        this.hintsUsed.textContent = this.hintsUsed;
+        this.completionMessage.textContent = `Congratulations! You solved the "${this.currentPuzzle.clue}" puzzle!`;
+        
+        this.completionModal.style.display = 'block';
+        
+        // Add success animation to the game area
+        document.querySelector('.game-area').classList.add('success-animation');
         setTimeout(() => {
-            tile.classList.add('reveal-pop');
-            setTimeout(() => {
-                tile.classList.add(feedback[i]);
-                tile.classList.remove('reveal-pop');
-                if (i === tiles.length - 1 && cb) cb();
-            }, 200);
-        }, i * 120);
-    });
-}
+            document.querySelector('.game-area').classList.remove('success-animation');
+        }, 600);
+    }
 
-// Show modal on load, then start game after closing
-window.addEventListener('DOMContentLoaded', () => {
-    showWelcomeModal();
-    // Game will still initialize, but user can't interact until modal is closed
-    setDifficulty();
-});
-
-// Allow Enter key to close welcome modal
-window.addEventListener('keydown', (e) => {
-    if (welcomeOverlay && welcomeOverlay.style.display !== 'none' && !welcomeOverlay.classList.contains('hide')) {
-        if (e.key === 'Enter') {
-            hideWelcomeModal();
+    showHint() {
+        if (this.hintsUsed >= this.currentPuzzle.hints.length) {
+            this.hintText.textContent = "No more hints available!";
+        } else {
+            this.hintText.textContent = this.currentPuzzle.hints[this.hintsUsed];
+            this.hintsUsed++;
         }
+        this.hintModal.style.display = 'block';
     }
-});
 
-// Only allow 5-digit mode
-function setDifficulty() {
-    resetGameState();
-    generateSecretNumber();
-    createBoard();
-    createNumberPad();
-    setupEventListeners();
-    updateEnterButton();
-    clearMessage();
-    closeModal();
-    resetNumberPadColors();
+    closeHintModal() {
+        this.hintModal.style.display = 'none';
+    }
+
+    closeModal() {
+        this.completionModal.style.display = 'none';
+        this.startNewPuzzle();
+    }
 }
 
-// On load, always start daily challenge
-window.addEventListener('DOMContentLoaded', () => {
-    setDifficulty();
-});
-
-// 1. Enter key triggers Play Again when modal is open
-window.addEventListener('keydown', (e) => {
-    if (endgameOverlay.classList.contains('show') && (e.key === 'Enter' || e.key === 'NumpadEnter')) {
-        if (!playagainBtn.disabled) playagainBtn.click();
-    }
+// Initialize the game when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    new OneClueCrosswords();
 }); 
