@@ -9,57 +9,40 @@
 <body>
     <div class="container">
         <header>
-            <h1>One Clue Crosswords</h1>
-            <p class="subtitle">Solve the puzzle with just one clue!</p>
+            <h1 id="themeTitle">Theme: <span id="themeName"></span></h1>
         </header>
-
         <main>
-            <div class="game-area">
-                <div class="clue-section">
-                    <h2>Clue:</h2>
-                    <div class="clue-display" id="clueDisplay"></div>
+            <div class="main-layout">
+                <div class="crossword-area">
+                    <div class="crossword-section">
+                        <div class="crossword-grid" id="crosswordGrid"></div>
+                    </div>
+                    <div class="active-clue-box" id="activeClueBox">
+                        <span class="clue-badge" id="activeClueLabel"></span>
+                        <span id="activeClueText"></span>
+                    </div>
                 </div>
-
-                <div class="crossword-section">
-                    <div class="crossword-grid" id="crosswordGrid"></div>
-                </div>
-
-                <div class="controls">
-                    <button id="newPuzzleBtn" class="btn">New Puzzle</button>
-                    <button id="checkBtn" class="btn">Check Solution</button>
-                    <button id="hintBtn" class="btn">Hint</button>
-                </div>
-
-                <div class="stats">
-                    <span id="progressDisplay">Progress: 0/0</span>
-                    <span id="timerDisplay">Time: 00:00</span>
-                </div>
+                <aside class="clues-panel">
+                    <div class="clues-list">
+                        <h2>Across</h2>
+                        <ul id="acrossClues"></ul>
+                        <h2>Down</h2>
+                        <ul id="downClues"></ul>
+                    </div>
+                </aside>
+            </div>
+            <div class="controls">
+                <button id="newPuzzleBtn" class="btn">New Puzzle</button>
             </div>
         </main>
     </div>
-
     <!-- Completion Modal -->
     <div id="completionModal" class="modal">
         <div class="modal-content">
             <h2>🎉 Puzzle Solved! 🎉</h2>
-            <p id="completionMessage"></p>
-            <div class="modal-stats">
-                <p>Time: <span id="finalTime"></span></p>
-                <p>Hints used: <span id="hintsUsed"></span></p>
-            </div>
             <button id="playAgainBtn" class="btn btn-primary">Play Another Puzzle</button>
         </div>
     </div>
-
-    <!-- Hint Modal -->
-    <div id="hintModal" class="modal">
-        <div class="modal-content">
-            <h2>💡 Hint</h2>
-            <p id="hintText"></p>
-            <button id="closeHintBtn" class="btn">Close</button>
-        </div>
-    </div>
-
     <script src="script.js"></script>
 </body>
 </html> 
