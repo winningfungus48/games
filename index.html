@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Word Game</title>
+    <title>Numbler - Number Guessing Game</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Daily Word Game</h1>
-            <p class="subtitle">Guess the 5-letter word in 6 tries</p>
+            <h1>Numbler</h1>
+            <p class="subtitle">Guess the 5-digit number in 6 tries</p>
         </header>
 
         <div class="game-container">
@@ -21,8 +19,12 @@
             
             <div class="message" id="message"></div>
             
-            <div class="keyboard-container">
-                <div class="keyboard" id="keyboard"></div>
+            <div class="number-pad-container">
+                <div class="number-pad" id="number-pad"></div>
+                <div class="action-buttons">
+                    <button id="delete-btn" class="action-btn">⌫</button>
+                    <button id="enter-btn" class="action-btn">Enter</button>
+                </div>
             </div>
         </div>
 
@@ -30,14 +32,13 @@
             <div class="modal-content">
                 <h2 id="modal-title"></h2>
                 <p id="modal-message"></p>
-                <div id="share-result" class="share-result"></div>
-                <button id="share-button" class="share-button">Share Result</button>
+                <div id="stats" class="stats"></div>
+                <button id="play-again-btn" class="play-again-btn">Play Again</button>
                 <button id="close-modal" class="close-button">Close</button>
             </div>
         </div>
     </div>
 
-    <script src="words-allowed.js"></script>
     <script src="script.js"></script>
 </body>
 </html> 

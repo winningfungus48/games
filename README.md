@@ -1,76 +1,67 @@
-# Daily Word Game
+# Numbler - Number Guessing Game
 
-A simple, daily word guessing game inspired by Wordle. Players have 6 attempts to guess a hidden 5-letter word. After each guess, the game provides visual feedback using colors: green for correct letters in the correct position, yellow for correct letters in the wrong position, and gray for incorrect letters.
+A web-based number guessing game inspired by Wordle, built with HTML, CSS, and JavaScript.
 
-## Features
+## 🎮 Game Overview
 
-- **Daily Challenges**: A new word is selected each day, the same for all players
-- **Visual Feedback**: Color-coded tiles provide immediate feedback on guesses
-- **Keyboard Input**: Full keyboard support with on-screen virtual keyboard
-- **Mobile-Friendly**: Responsive design that works on all devices
-- **Share Results**: Share your results as a spoiler-free emoji grid
-- **Progress Saving**: Game state is automatically saved and restored
-- **Clean UI**: Minimalist design with smooth animations
+Numbler is a number guessing game where players attempt to guess a secret 5-digit number within 6 attempts. Unlike some number games, **repeated digits are allowed** in the secret number, making it more challenging and interesting.
 
-## How to Play
+## 🎯 How to Play
 
-1. You have 6 attempts to guess a 5-letter word
-2. Type your guess using the keyboard (physical or on-screen)
-3. Press Enter to submit your guess
-4. After each guess, tiles will show:
-   - 🟩 Green: Letter is correct and in the right position
-   - 🟨 Yellow: Letter is in the word but in the wrong position
-   - ⬜ Gray: Letter is not in the word
-5. Use the feedback to make your next guess
-6. Share your results when the game ends
+1. **Objective**: Guess the secret 5-digit number in 6 tries or fewer
+2. **Input**: Use the virtual number pad or your keyboard to enter digits
+3. **Feedback**: After each guess, you'll receive color-coded feedback:
+   - 🟩 **Green**: Digit is correct and in the correct position
+   - 🟨 **Yellow**: Digit is in the number but in the wrong position
+   - ⬜ **Gray**: Digit does not appear in the secret number
 
-## Setup and Deployment
+### Example Gameplay
 
-### Local Development
+If the secret number is `112345` and you guess `121111`:
+- The first `1` would be green (correct position)
+- The second `1` would be yellow (in the number but wrong position)
+- The remaining digits would be gray (not in the number)
 
-1. Clone or download this repository
-2. Open `index.html` in your web browser
-3. The game will work immediately - no build process required
+## 🚀 Features
 
-### GitHub Pages Deployment
-
-1. Create a new repository on GitHub
-2. Upload all files to the repository:
-   - `index.html`
-   - `styles.css`
-   - `script.js`
-   - `README.md`
-3. Go to repository Settings → Pages
-4. Select "Deploy from a branch"
-5. Choose "main" branch and "/ (root)" folder
-6. Click "Save"
-7. Your game will be available at `https://yourusername.github.io/repository-name`
-
-### Custom Domain (Optional)
-
-1. In your repository Settings → Pages
-2. Enter your custom domain in the "Custom domain" field
-3. Add a CNAME record pointing to `yourusername.github.io`
-4. The game will be available at your custom domain
-
-## Technical Details
-
-- **Pure HTML/CSS/JavaScript**: No frameworks or build tools required
-- **Local Storage**: Game progress is saved in the browser
-- **Responsive Design**: Works on desktop, tablet, and mobile devices
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
+- **Virtual Number Pad**: Touch-friendly number input for mobile users
+- **Keyboard Support**: Full keyboard navigation and input
+- **Input Validation**: Ensures guesses are exactly 5 numeric digits
+- **Game Statistics**: Tracks games played, wins, current streak, and best streak
+- **Local Storage**: Persists statistics between sessions
+- **Modern UI**: Clean, minimalist design with smooth animations
 - **Accessibility**: Keyboard navigation and screen reader friendly
-- **Performance**: Lightweight and fast loading
 
-## Word List
+## 🎨 Technical Details
 
-The game includes a curated list of 5-letter words that are:
-- Common English words
-- Easy to spell and recognize
-- Appropriate for all audiences
+### Game Logic
+- **Secret Number Generation**: Uses pseudo-random number generation
+- **Feedback Algorithm**: Two-pass evaluation system for accurate feedback
+- **State Management**: Modular JavaScript with clear separation of concerns
+- **Statistics Tracking**: Comprehensive game statistics with localStorage persistence
 
-The daily word is determined by the day of the year, ensuring all players get the same word on the same day.
+### UI Components
+- **6×5 Grid**: Displays guesses and feedback
+- **Virtual Number Pad**: 0-9 buttons with action buttons (Delete, Enter)
+- **Modal System**: Game results and statistics display
+- **Responsive Layout**: Adapts to different screen sizes
 
-## Browser Support
+### Color Scheme
+- **Green (#10b981)**: Correct digit in correct position
+- **Yellow (#f59e0b)**: Correct digit in wrong position  
+- **Gray (#6b7280)**: Digit not in the number
+- **Blue (#3b82f6)**: Primary action button
+
+## 🛠️ Installation & Usage
+
+1. **Download**: Clone or download the project files
+2. **Open**: Open `index.html` in any modern web browser
+3. **Play**: Start guessing numbers immediately!
+
+No build process or dependencies required - it's pure HTML, CSS, and JavaScript.
+
+## 📱 Browser Support
 
 - Chrome (recommended)
 - Firefox
@@ -78,18 +69,30 @@ The daily word is determined by the day of the year, ensuring all players get th
 - Edge
 - Mobile browsers (iOS Safari, Chrome Mobile)
 
-## Contributing
+## 🎯 Game Statistics
 
-Feel free to fork this project and make improvements:
-- Add more words to the word list
-- Enhance the visual design
-- Add new features like statistics or themes
-- Improve accessibility
+The game tracks the following statistics:
+- **Games Played**: Total number of games attempted
+- **Games Won**: Number of successful guesses
+- **Current Streak**: Consecutive wins
+- **Best Streak**: Longest winning streak achieved
 
-## License
+Statistics are automatically saved to localStorage and persist between browser sessions.
+
+## 🔧 Customization
+
+The game is easily customizable by modifying the following constants in `script.js`:
+- `maxAttempts`: Number of allowed guesses (default: 6)
+- `numberLength`: Length of the secret number (default: 5)
+
+## 📄 License
 
 This project is open source and available under the MIT License.
 
-## Credits
+## 🤝 Contributing
 
-Inspired by the popular word game Wordle. Built with modern web technologies for a smooth, engaging user experience. 
+Feel free to submit issues, feature requests, or pull requests to improve the game!
+
+---
+
+**Enjoy playing Numbler!** 🎲 
